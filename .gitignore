@@ -1,0 +1,38 @@
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor
+.vscode/
+.idea/
+
+# Local database files
+*.sqlite3
+*.db
+
+# Build files
+build/
+dist/
+*.egg-info/
+
+# Generated files
+tannaz_qr.png
