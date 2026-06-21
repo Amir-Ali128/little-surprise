@@ -8,7 +8,6 @@ app = Flask(__name__)
 
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-# Mesaj veritabanını yükle
 def load_messages():
     try:
         with open("messages.json", "r", encoding="utf-8") as f:
@@ -28,10 +27,6 @@ Kurallar:
 - Farsça kısım 1 cümle + parantez içinde Türkçe anlamı
 - Her seferinde farklı, özgün bir mesaj yaz
 - Mesajlar doğal ve samimi olsun, şiirsel ama yapay değil
-- Aşağıdaki mesaj tonunu ve stilini örnek al ama aynısını yazma:
-  * "Bazı insanlar hayatına girer, fark etmeden her şeyi değiştirir."
-  * "Sen bir şarkısın, aklımdan çıkmayan."
-  * "فرشته‌ای که نمی‌دانست فرشته است"
 
 Format olarak tam olarak şunu kullan, başka hiçbir şey yazma:
 TR: [türkçe mesaj]
@@ -48,8 +43,6 @@ def index():
 def verify():
     data = request.get_json()
     password = data.get("password", "").strip().lower().replace(" ", "")
-    
-    # "09 Tannaz" boşluksuz küçük harf = "09tannaz"
     if password == "09tannaz":
         return jsonify({"success": True})
     return jsonify({"success": False})
@@ -57,6 +50,9 @@ def verify():
 
 @app.route("/get_message", methods=["GET"])
 def get_message():
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    print(f"API KEY VAR MI: {bool(api_key)}")
+    
     try:
         message = client.messages.create(
             model="claude-sonnet-4-6",
@@ -71,6 +67,7 @@ def get_message():
         )
 
         response_text = message.content[0].text.strip()
+        print(f"API CEVABI: {response_text}")
         lines = response_text.split('\n')
 
         tr_msg = ""
@@ -85,21 +82,25 @@ def get_message():
             elif line.startswith("ANLAM:"):
                 anlam = line.replace("ANLAM:", "").strip()
 
+        print(f"PARSED: TR={tr_msg}, FA={fa_msg}")
         return jsonify({
             "success": True,
             "tr": tr_msg,
             "fa": fa_msg,
-            "anlam": anlam
+            "anlam": anlam,
+            "source": "api"
         })
 
     except Exception as e:
+        print(f"API HATASI: {str(e)}")
         tr_msg = random.choice(MESSAGE_DB["turkish"])["text"] if MESSAGE_DB["turkish"] else ""
         fa_item = random.choice(MESSAGE_DB["farsi"]) if MESSAGE_DB["farsi"] else {}
         return jsonify({
             "success": True,
             "tr": tr_msg,
             "fa": fa_item.get("text", ""),
-            "anlam": fa_item.get("meaning", "")
+            "anlam": fa_item.get("meaning", ""),
+            "source": "fallback"
         })
 
 
