@@ -12,7 +12,7 @@
             --gold-light: #E8C97A; --cream: #F0EAD6; --muted: #8A8499;
             --glow: rgba(201, 168, 76, 0.15);
         }
-        body { background: var(--night); color: var(--cream); font-family: 'Cormorant Garamond', serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        body { background: var(--night); color: var(--cream); font-family: 'Cormorant Garamond', serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-y: auto; }
         .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
         .star { position: absolute; width: 1px; height: 1px; background: var(--cream); border-radius: 50%; animation: twinkle var(--dur) ease-in-out infinite; opacity: 0; }
         @keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: var(--op); } }
@@ -27,7 +27,7 @@
         #enter-btn { display: block; margin: 2rem auto 0; background: transparent; border: 1px solid rgba(201, 168, 76, 0.4); color: var(--gold); font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 200; letter-spacing: 0.4em; text-transform: uppercase; padding: 0.9rem 2.5rem; cursor: pointer; transition: all 0.4s ease; }
         #enter-btn:hover { background: var(--glow); border-color: var(--gold); }
         #error-msg { color: rgba(201, 168, 76, 0.5); font-size: 0.85rem; font-style: italic; margin-top: 1rem; opacity: 0; transition: opacity 0.3s; font-family: 'Inter', sans-serif; font-weight: 200; }
-        #main-screen { display: none; position: relative; z-index: 10; text-align: center; padding: 2rem; max-width: 600px; width: 100%; }
+        #main-screen { display: none; position: relative; z-index: 10; text-align: center; padding: 2rem; max-width: 600px; width: 100%; margin: auto; }
         .angel-container { position: relative; height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
         .angel { font-size: 5rem; animation: angelFloat 4s ease-in-out infinite; filter: drop-shadow(0 0 20px rgba(201, 168, 76, 0.4)); opacity: 0; }
         @keyframes angelFloat { 0%, 100% { transform: translateY(0px) rotate(-2deg); } 50% { transform: translateY(-15px) rotate(2deg); } }
@@ -41,7 +41,7 @@
         .message-fa { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(201, 168, 76, 0.15); }
         .message-fa-text { font-size: clamp(1.3rem, 4vw, 1.8rem); font-weight: 300; color: var(--gold-light); direction: rtl; line-height: 1.8; margin-bottom: 0.8rem; }
         .message-fa-meaning { font-size: 0.8rem; color: var(--muted); font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.2em; }
-        .ai-message-block { opacity: 0; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid rgba(201, 168, 76, 0.1); }
+        .ai-message-block { opacity: 0; margin-top: 2.5rem; padding-top: 2rem; padding-bottom: 3rem; border-top: 1px solid rgba(201, 168, 76, 0.1); }
         .ai-label { font-size: 0.7rem; color: rgba(201, 168, 76, 0.4); font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.4em; text-transform: uppercase; margin-bottom: 1.2rem; }
         .ai-tr { font-size: clamp(1rem, 2.5vw, 1.2rem); font-weight: 300; color: var(--cream); line-height: 1.8; font-style: italic; margin-bottom: 1.2rem; }
         .ai-fa { font-size: clamp(1.1rem, 3vw, 1.5rem); color: var(--gold-light); direction: rtl; line-height: 1.8; margin-bottom: 0.5rem; }
@@ -242,4 +242,4 @@
     }
 </script>
 </body>
-</html>4
+</html>
