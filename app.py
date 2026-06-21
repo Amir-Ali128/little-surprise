@@ -1,41 +1,20 @@
-from pathlib import Path
-import json
-import os
-import random
-
+from flask import Flask, render_template, request, jsonify
 import anthropic
-from flask import Flask, jsonify, render_template, request
-
-
-BASE_DIR = Path(__file__).resolve().parent
-MESSAGE_PATH = BASE_DIR / "data" / "messages.json"
+import os
+import json
+import random
 
 app = Flask(__name__)
 
-ACCESS_PASSWORD = os.getenv("ACCESS_PASSWORD", "").strip()
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-MODEL_NAME = os.getenv("MODEL_NAME", "claude-sonnet-4-6")
+client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-client = (
-    anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
-    if ANTHROPIC_API_KEY
-    else None
-)
-
-
+# Mesaj veritabanını yükle
 def load_messages():
-    """Load fallback messages from data/messages.json."""
     try:
-        with MESSAGE_PATH.open("r", encoding="utf-8") as file:
-            data = json.load(file)
-
-        return {
-            "turkish": data.get("turkish", []),
-            "farsi": data.get("farsi", []),
-        }
-    except (FileNotFoundError, json.JSONDecodeError):
+        with open("messages.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except:
         return {"turkish": [], "farsi": []}
-
 
 MESSAGE_DB = load_messages()
 
@@ -65,62 +44,34 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/health")
-def health():
-    return jsonify({"status": "ok"})
-
-
 @app.route("/verify", methods=["POST"])
 def verify():
-    if not ACCESS_PASSWORD:
-        return jsonify({
-            "success": False,
-            "error": "Access password is not configured."
-        }), 500
-
-    data = request.get_json(silent=True) or {}
-    password = data.get("password", "").strip()
-
-    return jsonify({"success": password == ACCESS_PASSWORD})
-
-
-def fallback_message():
-    """Return a local fallback message if the API is unavailable."""
-    turkish_items = MESSAGE_DB.get("turkish", [])
-    farsi_items = MESSAGE_DB.get("farsi", [])
-
-    tr_msg = random.choice(turkish_items).get("text", "") if turkish_items else ""
-    fa_item = random.choice(farsi_items) if farsi_items else {}
-
-    return {
-        "success": True,
-        "tr": tr_msg,
-        "fa": fa_item.get("text", ""),
-        "anlam": fa_item.get("meaning", ""),
-        "source": "fallback",
-    }
+    data = request.get_json()
+    password = data.get("password", "").strip().lower().replace(" ", "")
+    
+    # "09 Tannaz" boşluksuz küçük harf = "09tannaz"
+    if password == "09tannaz":
+        return jsonify({"success": True})
+    return jsonify({"success": False})
 
 
 @app.route("/get_message", methods=["GET"])
 def get_message():
-    if client is None:
-        return jsonify(fallback_message())
-
     try:
         message = client.messages.create(
-            model=MODEL_NAME,
+            model="claude-sonnet-4-6",
             max_tokens=300,
             system=SYSTEM_PROMPT,
             messages=[
                 {
                     "role": "user",
-                    "content": "Yeni ve özgün bir mesaj yaz. Daha önce yazdıklarından farklı olsun.",
+                    "content": "Yeni ve özgün bir mesaj yaz. Daha önce yazdıklarından farklı olsun."
                 }
-            ],
+            ]
         )
 
         response_text = message.content[0].text.strip()
-        lines = response_text.splitlines()
+        lines = response_text.split('\n')
 
         tr_msg = ""
         fa_msg = ""
@@ -128,27 +79,30 @@ def get_message():
 
         for line in lines:
             if line.startswith("TR:"):
-                tr_msg = line.replace("TR:", "", 1).strip()
+                tr_msg = line.replace("TR:", "").strip()
             elif line.startswith("FA:"):
-                fa_msg = line.replace("FA:", "", 1).strip()
+                fa_msg = line.replace("FA:", "").strip()
             elif line.startswith("ANLAM:"):
-                anlam = line.replace("ANLAM:", "", 1).strip()
-
-        if not tr_msg and not fa_msg:
-            return jsonify(fallback_message())
+                anlam = line.replace("ANLAM:", "").strip()
 
         return jsonify({
             "success": True,
             "tr": tr_msg,
             "fa": fa_msg,
-            "anlam": anlam,
-            "source": "api",
+            "anlam": anlam
         })
 
-    except Exception:
-        return jsonify(fallback_message())
+    except Exception as e:
+        tr_msg = random.choice(MESSAGE_DB["turkish"])["text"] if MESSAGE_DB["turkish"] else ""
+        fa_item = random.choice(MESSAGE_DB["farsi"]) if MESSAGE_DB["farsi"] else {}
+        return jsonify({
+            "success": True,
+            "tr": tr_msg,
+            "fa": fa_item.get("text", ""),
+            "anlam": fa_item.get("meaning", "")
+        })
 
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 5000))
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
