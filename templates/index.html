@@ -8,55 +8,95 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --night: #080810; --deep: #0D0D1A; --gold: #C9A84C;
-            --gold-light: #E8C97A; --cream: #F0EAD6; --muted: #8A8499;
-            --glow: rgba(201, 168, 76, 0.15);
+            --night: #0a0a14;
+            --gold: #c9a84c;
+            --gold-light: #e8c97a;
+            --gold-pale: #f0dfa0;
+            --cream: #f0ead6;
+            --rose: #c4a0b0;
+            --lavender: #b0a8c8;
+            --muted: #8a8499;
+            --glow: rgba(201, 168, 76, 0.12);
+            --rose-glow: rgba(196, 160, 176, 0.08);
         }
-        body { background: var(--night); color: var(--cream); font-family: 'Cormorant Garamond', serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-y: auto; }
+        body { background: var(--night); color: var(--cream); font-family: 'Cormorant Garamond', serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-y: auto; position: relative; }
+        .side-decor { position: fixed; top: 0; bottom: 0; width: 120px; pointer-events: none; z-index: 1; overflow: hidden; }
+        .side-decor.left { left: 0; }
+        .side-decor.right { right: 0; }
+        .side-star { position: absolute; color: var(--gold); opacity: 0; animation: sideTwinkle var(--dur) ease-in-out infinite; font-size: var(--sz); }
+        @keyframes sideTwinkle { 0%, 100% { opacity: 0; transform: scale(0.8); } 50% { opacity: var(--op); transform: scale(1); } }
+        .farsi-bg { position: fixed; font-size: 8rem; color: rgba(201, 168, 76, 0.03); pointer-events: none; z-index: 0; font-family: 'Cormorant Garamond', serif; direction: rtl; user-select: none; }
+        .farsi-bg.top-left { top: -2rem; left: -1rem; font-size: 12rem; }
+        .farsi-bg.bottom-right { bottom: -2rem; right: -1rem; font-size: 12rem; }
+        .corner-glow { position: fixed; width: 300px; height: 300px; border-radius: 50%; pointer-events: none; z-index: 0; }
+        .corner-glow.tl { top: -100px; left: -100px; background: radial-gradient(circle, rgba(196,160,176,0.06) 0%, transparent 70%); }
+        .corner-glow.br { bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(176,168,200,0.06) 0%, transparent 70%); }
+        .corner-glow.tr { top: -100px; right: -100px; background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%); }
+        .corner-glow.bl { bottom: -100px; left: -100px; background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%); }
         .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-        .star { position: absolute; width: 1px; height: 1px; background: var(--cream); border-radius: 50%; animation: twinkle var(--dur) ease-in-out infinite; opacity: 0; }
+        .star { position: absolute; border-radius: 50%; animation: twinkle var(--dur) ease-in-out infinite; opacity: 0; }
         @keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: var(--op); } }
+        .gold-line { position: fixed; background: linear-gradient(var(--dir), transparent, rgba(201,168,76,0.15), transparent); pointer-events: none; z-index: 1; }
+        .gold-line.left-line { left: 110px; top: 10%; bottom: 10%; width: 1px; --dir: to bottom; }
+        .gold-line.right-line { right: 110px; top: 10%; bottom: 10%; width: 1px; --dir: to bottom; }
         #password-screen { position: relative; z-index: 10; text-align: center; padding: 2rem; animation: fadeIn 1.5s ease; }
-        .farsi-title { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 300; color: var(--gold); letter-spacing: 0.05em; margin-bottom: 0.5rem; direction: rtl; text-shadow: 0 0 40px rgba(201, 168, 76, 0.3); }
+        .farsi-title { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 300; color: var(--gold); letter-spacing: 0.05em; margin-bottom: 0.5rem; direction: rtl; text-shadow: 0 0 40px rgba(201, 168, 76, 0.25), 0 0 80px rgba(196,160,176,0.1); }
         .subtitle { font-size: clamp(0.8rem, 2.5vw, 1rem); color: var(--muted); font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 3rem; }
         .divider { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 1.5rem auto; }
-        .password-container { position: relative; display: inline-block; }
-        #password-input { background: transparent; border: none; border-bottom: 1px solid rgba(201, 168, 76, 0.3); color: var(--cream); font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; text-align: center; padding: 0.8rem 1.5rem; width: 280px; outline: none; letter-spacing: 0.1em; transition: border-color 0.4s ease; }
+        #password-input { background: transparent; border: none; border-bottom: 1px solid rgba(201, 168, 76, 0.25); color: var(--cream); font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; text-align: center; padding: 0.8rem 1.5rem; width: 280px; outline: none; letter-spacing: 0.1em; transition: border-color 0.4s ease; }
         #password-input::placeholder { color: var(--muted); font-style: italic; font-size: 1rem; }
         #password-input:focus { border-bottom-color: var(--gold); }
-        #enter-btn { display: block; margin: 2rem auto 0; background: transparent; border: 1px solid rgba(201, 168, 76, 0.4); color: var(--gold); font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 200; letter-spacing: 0.4em; text-transform: uppercase; padding: 0.9rem 2.5rem; cursor: pointer; transition: all 0.4s ease; }
+        #enter-btn { display: block; margin: 2rem auto 0; background: transparent; border: 1px solid rgba(201, 168, 76, 0.3); color: var(--gold); font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 200; letter-spacing: 0.4em; text-transform: uppercase; padding: 0.9rem 2.5rem; cursor: pointer; transition: all 0.4s ease; }
         #enter-btn:hover { background: var(--glow); border-color: var(--gold); }
-        #error-msg { color: rgba(201, 168, 76, 0.5); font-size: 0.85rem; font-style: italic; margin-top: 1rem; opacity: 0; transition: opacity 0.3s; font-family: 'Inter', sans-serif; font-weight: 200; }
-        #main-screen { display: none; position: relative; z-index: 10; text-align: center; padding: 2rem; max-width: 600px; width: 100%; margin: auto; }
+        #error-msg { color: rgba(196, 160, 176, 0.6); font-size: 0.85rem; font-style: italic; margin-top: 1rem; opacity: 0; transition: opacity 0.3s; font-family: 'Inter', sans-serif; font-weight: 200; }
+        #main-screen { display: none; position: relative; z-index: 10; text-align: center; padding: 2rem; max-width: 580px; width: 100%; margin: auto; }
         .angel-container { position: relative; height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
-        .angel { font-size: 5rem; animation: angelFloat 4s ease-in-out infinite; filter: drop-shadow(0 0 20px rgba(201, 168, 76, 0.4)); opacity: 0; }
+        .angel { font-size: 5rem; animation: angelFloat 4s ease-in-out infinite; filter: drop-shadow(0 0 20px rgba(201, 168, 76, 0.3)) drop-shadow(0 0 40px rgba(196,160,176,0.15)); opacity: 0; }
         @keyframes angelFloat { 0%, 100% { transform: translateY(0px) rotate(-2deg); } 50% { transform: translateY(-15px) rotate(2deg); } }
-        .angel-glow { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(201, 168, 76, 0.08) 0%, transparent 70%); border-radius: 50%; animation: glowPulse 4s ease-in-out infinite; }
+        .angel-glow { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, rgba(196,160,176,0.04) 50%, transparent 70%); border-radius: 50%; animation: glowPulse 4s ease-in-out infinite; }
         @keyframes glowPulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.3); opacity: 1; } }
-        .farsi-header { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 300; color: var(--gold); direction: rtl; letter-spacing: 0.05em; margin-bottom: 0.3rem; opacity: 0; text-shadow: 0 0 30px rgba(201, 168, 76, 0.25); }
+        .farsi-header { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 300; color: var(--gold); direction: rtl; letter-spacing: 0.05em; margin-bottom: 0.3rem; opacity: 0; text-shadow: 0 0 30px rgba(201,168,76,0.2), 0 0 60px rgba(196,160,176,0.08); }
         .farsi-meaning { font-size: 0.85rem; color: var(--muted); font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0; margin-bottom: 2.5rem; }
         .message-block { opacity: 0; margin: 1.5rem 0; }
-        .message-tr { font-size: clamp(1.1rem, 3vw, 1.4rem); font-weight: 300; color: var(--cream); line-height: 1.8; font-style: italic; }
-        .message-tr span { display: block; margin-top: 0.5rem; }
-        .message-fa { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(201, 168, 76, 0.15); }
-        .message-fa-text { font-size: clamp(1.3rem, 4vw, 1.8rem); font-weight: 300; color: var(--gold-light); direction: rtl; line-height: 1.8; margin-bottom: 0.8rem; }
-        .message-fa-meaning { font-size: 0.8rem; color: var(--muted); font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.2em; }
-        .ai-message-block { opacity: 0; margin-top: 2.5rem; padding-top: 2rem; padding-bottom: 3rem; border-top: 1px solid rgba(201, 168, 76, 0.1); }
-        .ai-label { font-size: 0.7rem; color: rgba(201, 168, 76, 0.4); font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.4em; text-transform: uppercase; margin-bottom: 1.2rem; }
-        .ai-tr { font-size: clamp(1rem, 2.5vw, 1.2rem); font-weight: 300; color: var(--cream); line-height: 1.8; font-style: italic; margin-bottom: 1.2rem; }
-        .ai-fa { font-size: clamp(1.1rem, 3vw, 1.5rem); color: var(--gold-light); direction: rtl; line-height: 1.8; margin-bottom: 0.5rem; }
-        .ai-anlam { font-size: 0.78rem; color: var(--muted); font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.15em; }
+        .message-tr { font-size: clamp(1.1rem, 3vw, 1.35rem); font-weight: 300; color: var(--cream); line-height: 1.9; font-style: italic; }
+        .message-tr span { display: block; margin-top: 0.4rem; color: rgba(240,234,214,0.85); }
+        .message-fa { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(201, 168, 76, 0.12); }
+        .message-fa-text { font-size: clamp(1.2rem, 4vw, 1.7rem); font-weight: 300; color: var(--gold-light); direction: rtl; line-height: 1.9; margin-bottom: 0.6rem; }
+        .message-fa-meaning { font-size: 0.78rem; color: var(--rose); font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.25em; }
+        .ai-message-block { opacity: 0; margin-top: 2.5rem; padding-top: 2rem; padding-bottom: 3rem; border-top: 1px solid rgba(201, 168, 76, 0.08); }
+        .ai-label { font-size: 0.68rem; color: rgba(196, 160, 176, 0.5); font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.45em; text-transform: uppercase; margin-bottom: 1.4rem; }
+        .ai-tr { font-size: clamp(1rem, 2.5vw, 1.2rem); font-weight: 300; color: rgba(240,234,214,0.9); line-height: 1.9; font-style: italic; margin-bottom: 1.2rem; }
+        .ai-fa { font-size: clamp(1.1rem, 3vw, 1.5rem); color: var(--gold-light); direction: rtl; line-height: 1.9; margin-bottom: 0.5rem; }
+        .ai-anlam { font-size: 0.75rem; color: var(--lavender); font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.18em; }
         .loading-dots { display: inline-flex; gap: 6px; align-items: center; }
-        .loading-dots span { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; animation: dotPulse 1.4s ease-in-out infinite; }
+        .loading-dots span { width: 3px; height: 3px; background: var(--gold); border-radius: 50%; animation: dotPulse 1.4s ease-in-out infinite; }
         .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
         .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes dotPulse { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .sparkle { position: fixed; pointer-events: none; z-index: 5; font-size: 0.8rem; animation: sparkleFly 2s ease forwards; opacity: 0; }
+        .sparkle { position: fixed; pointer-events: none; z-index: 5; font-size: 0.7rem; animation: sparkleFly 2s ease forwards; opacity: 0; }
         @keyframes sparkleFly { 0% { opacity: 0; transform: translateY(0) scale(0); } 30% { opacity: 1; transform: translateY(-20px) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(0.5); } }
+        .feather-decor { position: fixed; pointer-events: none; z-index: 1; opacity: 0.04; font-size: 4rem; animation: featherFloat 8s ease-in-out infinite; }
+        .feather-decor.f1 { top: 15%; left: 3%; animation-delay: 0s; }
+        .feather-decor.f2 { top: 60%; right: 3%; animation-delay: 3s; }
+        .feather-decor.f3 { bottom: 15%; left: 5%; animation-delay: 5s; font-size: 3rem; }
+        @keyframes featherFloat { 0%, 100% { transform: translateY(0) rotate(-5deg); opacity: 0.04; } 50% { transform: translateY(-10px) rotate(5deg); opacity: 0.07; } }
     </style>
 </head>
 <body>
+<div class="corner-glow tl"></div>
+<div class="corner-glow br"></div>
+<div class="corner-glow tr"></div>
+<div class="corner-glow bl"></div>
+<div class="farsi-bg top-left">ف</div>
+<div class="farsi-bg bottom-right">ه</div>
+<div class="gold-line left-line"></div>
+<div class="gold-line right-line"></div>
+<div class="feather-decor f1">🪶</div>
+<div class="feather-decor f2">🪶</div>
+<div class="feather-decor f3">🕊️</div>
+<div class="side-decor left" id="side-left"></div>
+<div class="side-decor right" id="side-right"></div>
 <div class="stars" id="stars"></div>
 <div id="password-screen">
     <div class="farsi-title">فرشته</div>
@@ -101,22 +141,45 @@
 </div>
 <script>
     const starsContainer = document.getElementById('stars');
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < 100; i++) {
         const star = document.createElement('div');
         star.className = 'star';
         star.style.left = Math.random() * 100 + '%';
         star.style.top = Math.random() * 100 + '%';
-        star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
-        star.style.setProperty('--op', (0.2 + Math.random() * 0.6).toString());
-        star.style.animationDelay = Math.random() * 4 + 's';
+        star.style.setProperty('--dur', (2 + Math.random() * 5) + 's');
+        star.style.setProperty('--op', (0.15 + Math.random() * 0.5).toString());
+        star.style.animationDelay = Math.random() * 5 + 's';
         const size = 1 + Math.random() * 1.5;
         star.style.width = size + 'px';
         star.style.height = size + 'px';
+        const colors = ['#c9a84c', '#c4a0b0', '#b0a8c8', '#f0ead6', '#e8c97a'];
+        star.style.background = colors[Math.floor(Math.random() * colors.length)];
         starsContainer.appendChild(star);
     }
 
+    function createSideStars(containerId) {
+        const container = document.getElementById(containerId);
+        const symbols = ['✦', '✧', '⋆', '˚', '·', '✵', '✴'];
+        for (let i = 0; i < 18; i++) {
+            const star = document.createElement('div');
+            star.className = 'side-star';
+            star.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            star.style.left = (Math.random() * 80) + '%';
+            star.style.top = (Math.random() * 100) + '%';
+            star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+            star.style.setProperty('--op', (0.2 + Math.random() * 0.5).toString());
+            star.style.setProperty('--sz', (0.5 + Math.random() * 0.7) + 'rem');
+            star.style.animationDelay = Math.random() * 4 + 's';
+            const colors = ['#c9a84c', '#c4a0b0', '#b0a8c8', '#e8c97a'];
+            star.style.color = colors[Math.floor(Math.random() * colors.length)];
+            container.appendChild(star);
+        }
+    }
+    createSideStars('side-left');
+    createSideStars('side-right');
+
     function createSparkle(x, y) {
-        const sparkles = ['✦', '✧', '·', '⋆', '˚'];
+        const sparkles = ['✦', '✧', '·', '⋆', '˚', '✵'];
         for (let i = 0; i < 4; i++) {
             setTimeout(() => {
                 const s = document.createElement('div');
@@ -124,7 +187,8 @@
                 s.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
                 s.style.left = (x + (Math.random() - 0.5) * 60) + 'px';
                 s.style.top = (y + (Math.random() - 0.5) * 60) + 'px';
-                s.style.color = '#C9A84C';
+                const colors = ['#c9a84c', '#c4a0b0', '#b0a8c8', '#e8c97a'];
+                s.style.color = colors[Math.floor(Math.random() * colors.length)];
                 document.body.appendChild(s);
                 setTimeout(() => s.remove(), 2000);
             }, i * 150);
@@ -151,10 +215,10 @@
             } else {
                 const errMsg = document.getElementById('error-msg');
                 errMsg.style.opacity = '1';
-                document.getElementById('password-input').style.borderBottomColor = 'rgba(201,168,76,0.2)';
+                document.getElementById('password-input').style.borderBottomColor = 'rgba(196,160,176,0.3)';
                 setTimeout(() => {
                     errMsg.style.opacity = '0';
-                    document.getElementById('password-input').style.borderBottomColor = 'rgba(201,168,76,0.3)';
+                    document.getElementById('password-input').style.borderBottomColor = 'rgba(201,168,76,0.25)';
                 }, 2000);
             }
         } catch(e) { console.error(e); }
@@ -196,22 +260,14 @@
 
     async function runSequence() {
         const angel = document.getElementById('angel');
-        const farsiHeader = document.getElementById('farsi-header');
-        const farsiMeaning = document.getElementById('farsi-meaning');
-        const msg1 = document.getElementById('msg1');
-        const msg2 = document.getElementById('msg2');
-        const msg3 = document.getElementById('msg3');
-        const divider2 = document.getElementById('divider2');
-        const aiBlock = document.getElementById('ai-block');
-
         setTimeout(() => { angel.style.transition = 'opacity 2s ease'; angel.style.opacity = '1'; }, 300);
-        await animateEl(farsiHeader, 800);
-        await animateEl(farsiMeaning, 200);
-        await animateEl(msg1, 600);
-        await animateEl(msg2, 800);
-        await animateEl(msg3, 800);
-        setTimeout(() => { divider2.style.transition = 'opacity 1s ease'; divider2.style.opacity = '1'; }, 500);
-        await animateEl(aiBlock, 800);
+        await animateEl(document.getElementById('farsi-header'), 800);
+        await animateEl(document.getElementById('farsi-meaning'), 200);
+        await animateEl(document.getElementById('msg1'), 600);
+        await animateEl(document.getElementById('msg2'), 800);
+        await animateEl(document.getElementById('msg3'), 800);
+        setTimeout(() => { document.getElementById('divider2').style.transition = 'opacity 1s ease'; document.getElementById('divider2').style.opacity = '1'; }, 500);
+        await animateEl(document.getElementById('ai-block'), 800);
         fetchAIMessage();
     }
 
