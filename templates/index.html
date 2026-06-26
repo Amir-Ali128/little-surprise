@@ -1,301 +1,413 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فرشته</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@200;300&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --night: #0a0a14;
-            --gold: #c9a84c;
-            --gold-light: #e8c97a;
-            --gold-pale: #f0dfa0;
-            --cream: #f0ead6;
-            --rose: #c4a0b0;
-            --lavender: #b0a8c8;
-            --muted: #8a8499;
-            --glow: rgba(201, 168, 76, 0.12);
-            --rose-glow: rgba(196, 160, 176, 0.08);
-        }
-        body { background: var(--night); color: var(--cream); font-family: 'Cormorant Garamond', serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-y: auto; position: relative; }
-        .side-decor { position: fixed; top: 0; bottom: 0; width: 120px; pointer-events: none; z-index: 1; overflow: hidden; }
-        .side-decor.left { left: 0; }
-        .side-decor.right { right: 0; }
-        .side-star { position: absolute; color: var(--gold); opacity: 0; animation: sideTwinkle var(--dur) ease-in-out infinite; font-size: var(--sz); }
-        @keyframes sideTwinkle { 0%, 100% { opacity: 0; transform: scale(0.8); } 50% { opacity: var(--op); transform: scale(1); } }
-        .farsi-bg { position: fixed; font-size: 8rem; color: rgba(201, 168, 76, 0.03); pointer-events: none; z-index: 0; font-family: 'Cormorant Garamond', serif; direction: rtl; user-select: none; }
-        .farsi-bg.top-left { top: -2rem; left: -1rem; font-size: 12rem; }
-        .farsi-bg.bottom-right { bottom: -2rem; right: -1rem; font-size: 12rem; }
-        .corner-glow { position: fixed; width: 300px; height: 300px; border-radius: 50%; pointer-events: none; z-index: 0; }
-        .corner-glow.tl { top: -100px; left: -100px; background: radial-gradient(circle, rgba(196,160,176,0.06) 0%, transparent 70%); }
-        .corner-glow.br { bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(176,168,200,0.06) 0%, transparent 70%); }
-        .corner-glow.tr { top: -100px; right: -100px; background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%); }
-        .corner-glow.bl { bottom: -100px; left: -100px; background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%); }
-        .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-        .star { position: absolute; border-radius: 50%; animation: twinkle var(--dur) ease-in-out infinite; opacity: 0; }
-        @keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: var(--op); } }
-        .gold-line { position: fixed; background: linear-gradient(var(--dir), transparent, rgba(201,168,76,0.15), transparent); pointer-events: none; z-index: 1; }
-        .gold-line.left-line { left: 110px; top: 10%; bottom: 10%; width: 1px; --dir: to bottom; }
-        .gold-line.right-line { right: 110px; top: 10%; bottom: 10%; width: 1px; --dir: to bottom; }
-        #password-screen { position: relative; z-index: 10; text-align: center; padding: 2rem; animation: fadeIn 1.5s ease; }
-        .farsi-title { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 300; color: var(--gold); letter-spacing: 0.05em; margin-bottom: 0.5rem; direction: rtl; text-shadow: 0 0 40px rgba(201, 168, 76, 0.25), 0 0 80px rgba(196,160,176,0.1); }
-        .subtitle { font-size: clamp(0.8rem, 2.5vw, 1rem); color: var(--muted); font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 3rem; }
-        .divider { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 1.5rem auto; }
-        #password-input { background: transparent; border: none; border-bottom: 1px solid rgba(201, 168, 76, 0.25); color: var(--cream); font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; text-align: center; padding: 0.8rem 1.5rem; width: 280px; outline: none; letter-spacing: 0.1em; transition: border-color 0.4s ease; }
-        #password-input::placeholder { color: var(--muted); font-style: italic; font-size: 1rem; }
-        #password-input:focus { border-bottom-color: var(--gold); }
-        #enter-btn { display: block; margin: 2rem auto 0; background: transparent; border: 1px solid rgba(201, 168, 76, 0.3); color: var(--gold); font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 200; letter-spacing: 0.4em; text-transform: uppercase; padding: 0.9rem 2.5rem; cursor: pointer; transition: all 0.4s ease; }
-        #enter-btn:hover { background: var(--glow); border-color: var(--gold); }
-        #error-msg { color: rgba(196, 160, 176, 0.6); font-size: 0.85rem; font-style: italic; margin-top: 1rem; opacity: 0; transition: opacity 0.3s; font-family: 'Inter', sans-serif; font-weight: 200; }
-        #main-screen { display: none; position: relative; z-index: 10; text-align: center; padding: 2rem; max-width: 580px; width: 100%; margin: auto; }
-        .angel-container { position: relative; height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
-        .angel { font-size: 5rem; animation: angelFloat 4s ease-in-out infinite; filter: drop-shadow(0 0 20px rgba(201, 168, 76, 0.3)) drop-shadow(0 0 40px rgba(196,160,176,0.15)); opacity: 0; }
-        @keyframes angelFloat { 0%, 100% { transform: translateY(0px) rotate(-2deg); } 50% { transform: translateY(-15px) rotate(2deg); } }
-        .angel-glow { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, rgba(196,160,176,0.04) 50%, transparent 70%); border-radius: 50%; animation: glowPulse 4s ease-in-out infinite; }
-        @keyframes glowPulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.3); opacity: 1; } }
-        .farsi-header { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 300; color: var(--gold); direction: rtl; letter-spacing: 0.05em; margin-bottom: 0.3rem; opacity: 0; text-shadow: 0 0 30px rgba(201,168,76,0.2), 0 0 60px rgba(196,160,176,0.08); }
-        .farsi-meaning { font-size: 0.85rem; color: var(--muted); font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0; margin-bottom: 2.5rem; }
-        .message-block { opacity: 0; margin: 1.5rem 0; }
-        .message-tr { font-size: clamp(1.1rem, 3vw, 1.35rem); font-weight: 300; color: var(--cream); line-height: 1.9; font-style: italic; }
-        .message-tr span { display: block; margin-top: 0.4rem; color: rgba(240,234,214,0.85); }
-        .message-fa { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(201, 168, 76, 0.12); }
-        .message-fa-text { font-size: clamp(1.2rem, 4vw, 1.7rem); font-weight: 300; color: var(--gold-light); direction: rtl; line-height: 1.9; margin-bottom: 0.6rem; }
-        .message-fa-meaning { font-size: 0.78rem; color: var(--rose); font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.25em; }
-        .ai-message-block { opacity: 0; margin-top: 2.5rem; padding-top: 2rem; padding-bottom: 3rem; border-top: 1px solid rgba(201, 168, 76, 0.08); }
-        .ai-label { font-size: 0.68rem; color: rgba(196, 160, 176, 0.5); font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.45em; text-transform: uppercase; margin-bottom: 1.4rem; }
-        .ai-tr { font-size: clamp(1rem, 2.5vw, 1.2rem); font-weight: 300; color: rgba(240,234,214,0.9); line-height: 1.9; font-style: italic; margin-bottom: 1.2rem; }
-        .ai-fa { font-size: clamp(1.1rem, 3vw, 1.5rem); color: var(--gold-light); direction: rtl; line-height: 1.9; margin-bottom: 0.5rem; }
-        .ai-anlam { font-size: 0.75rem; color: var(--lavender); font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.18em; }
-        .loading-dots { display: inline-flex; gap: 6px; align-items: center; }
-        .loading-dots span { width: 3px; height: 3px; background: var(--gold); border-radius: 50%; animation: dotPulse 1.4s ease-in-out infinite; }
-        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes dotPulse { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .sparkle { position: fixed; pointer-events: none; z-index: 5; font-size: 0.7rem; animation: sparkleFly 2s ease forwards; opacity: 0; }
-        @keyframes sparkleFly { 0% { opacity: 0; transform: translateY(0) scale(0); } 30% { opacity: 1; transform: translateY(-20px) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(0.5); } }
-        .feather-decor { position: fixed; pointer-events: none; z-index: 1; opacity: 0.04; font-size: 4rem; animation: featherFloat 8s ease-in-out infinite; }
-        .feather-decor.f1 { top: 15%; left: 3%; animation-delay: 0s; }
-        .feather-decor.f2 { top: 60%; right: 3%; animation-delay: 3s; }
-        .feather-decor.f3 { bottom: 15%; left: 5%; animation-delay: 5s; font-size: 3rem; }
-        @keyframes featherFloat { 0%, 100% { transform: translateY(0) rotate(-5deg); opacity: 0.04; } 50% { transform: translateY(-10px) rotate(5deg); opacity: 0.07; } }
-    </style>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>فرشته</title>
+   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@200;300&display=swap" rel="stylesheet">
+   <style>
+       * { margin: 0; padding: 0; box-sizing: border-box; }
+       :root {
+           --gold: #c9a84c;
+           --gold-light: #e8c97a;
+           --cream: #f0ead6;
+           --rose: #c4a0b0;
+           --lavender: #b0a8c8;
+           --muted: #8a8499;
+           --glow: rgba(201, 168, 76, 0.12);
+       }
+       body {
+           font-family: 'Cormorant Garamond', serif;
+           min-height: 100vh;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           overflow-y: auto;
+           position: relative;
+           transition: background-color 8s ease, color 8s ease;
+       }
+       .side-decor { position: fixed; top: 0; bottom: 0; width: 120px; pointer-events: none; z-index: 1; overflow: hidden; }
+       .side-decor.left { left: 0; }
+       .side-decor.right { right: 0; }
+       .side-star { position: absolute; opacity: 0; animation: sideTwinkle var(--dur) ease-in-out infinite; font-size: var(--sz); transition: color 8s ease; }
+       @keyframes sideTwinkle { 0%, 100% { opacity: 0; transform: scale(0.8); } 50% { opacity: var(--op); transform: scale(1); } }
+       .farsi-bg { position: fixed; pointer-events: none; z-index: 0; font-family: 'Cormorant Garamond', serif; direction: rtl; user-select: none; transition: color 8s ease; }
+       .farsi-bg.top-left { top: -2rem; left: -1rem; font-size: 12rem; }
+       .farsi-bg.bottom-right { bottom: -2rem; right: -1rem; font-size: 12rem; }
+       .corner-glow { position: fixed; width: 300px; height: 300px; border-radius: 50%; pointer-events: none; z-index: 0; transition: background 8s ease; }
+       .corner-glow.tl { top: -100px; left: -100px; }
+       .corner-glow.br { bottom: -100px; right: -100px; }
+       .corner-glow.tr { top: -100px; right: -100px; }
+       .corner-glow.bl { bottom: -100px; left: -100px; }
+       .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+       .star { position: absolute; border-radius: 50%; animation: twinkle var(--dur) ease-in-out infinite; opacity: 0; transition: background 8s ease; }
+       @keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: var(--op); } }
+       .gold-line { position: fixed; pointer-events: none; z-index: 1; transition: background 8s ease; }
+       .gold-line.left-line { left: 110px; top: 10%; bottom: 10%; width: 1px; }
+       .gold-line.right-line { right: 110px; top: 10%; bottom: 10%; width: 1px; }
+       #password-screen { position: relative; z-index: 10; text-align: center; padding: 2rem; animation: fadeIn 1.5s ease; }
+       .farsi-title { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 300; letter-spacing: 0.05em; margin-bottom: 0.5rem; direction: rtl; transition: color 8s ease, text-shadow 8s ease; }
+       .subtitle { font-size: clamp(0.8rem, 2.5vw, 1rem); font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 3rem; transition: color 8s ease; }
+       .divider { width: 60px; height: 1px; margin: 1.5rem auto; transition: background 8s ease; }
+       #password-input { background: transparent; border: none; border-bottom: 1px solid rgba(201,168,76,0.25); font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; text-align: center; padding: 0.8rem 1.5rem; width: 280px; outline: none; letter-spacing: 0.1em; transition: border-color 0.4s ease, color 8s ease; }
+       #password-input::placeholder { font-style: italic; font-size: 1rem; }
+       #password-input:focus { border-bottom-color: var(--gold); }
+       #enter-btn { display: block; margin: 2rem auto 0; background: transparent; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 200; letter-spacing: 0.4em; text-transform: uppercase; padding: 0.9rem 2.5rem; cursor: pointer; transition: all 8s ease; }
+       #error-msg { font-size: 0.85rem; font-style: italic; margin-top: 1rem; opacity: 0; transition: opacity 0.3s; font-family: 'Inter', sans-serif; font-weight: 200; color: rgba(196,160,176,0.6); }
+       #main-screen { display: none; position: relative; z-index: 10; text-align: center; padding: 2rem; max-width: 580px; width: 100%; margin: auto; }
+       .angel-container { position: relative; height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+       .angel { font-size: 5rem; animation: angelFloat 4s ease-in-out infinite; opacity: 0; transition: filter 8s ease; }
+       @keyframes angelFloat { 0%, 100% { transform: translateY(0px) rotate(-2deg); } 50% { transform: translateY(-15px) rotate(2deg); } }
+       .angel-glow { position: absolute; width: 140px; height: 140px; border-radius: 50%; animation: glowPulse 4s ease-in-out infinite; transition: background 8s ease; }
+       @keyframes glowPulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.3); opacity: 1; } }
+       .farsi-header { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 300; direction: rtl; letter-spacing: 0.05em; margin-bottom: 0.3rem; opacity: 0; transition: color 8s ease, text-shadow 8s ease; }
+       .farsi-meaning { font-size: 0.85rem; font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0; margin-bottom: 2.5rem; transition: color 8s ease; }
+       .message-block { opacity: 0; margin: 1.5rem 0; }
+       .message-tr { font-size: clamp(1.1rem, 3vw, 1.35rem); font-weight: 300; line-height: 1.9; font-style: italic; transition: color 8s ease; }
+       .message-tr span { display: block; margin-top: 0.4rem; transition: color 8s ease; }
+       .message-fa { margin-top: 2rem; padding-top: 2rem; transition: border-color 8s ease; }
+       .message-fa-text { font-size: clamp(1.2rem, 4vw, 1.7rem); font-weight: 300; direction: rtl; line-height: 1.9; margin-bottom: 0.6rem; transition: color 8s ease; }
+       .message-fa-meaning { font-size: 0.78rem; font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.25em; transition: color 8s ease; }
+       .ai-message-block { opacity: 0; margin-top: 2.5rem; padding-top: 2rem; padding-bottom: 3rem; transition: border-color 8s ease; }
+       .ai-label { font-size: 0.68rem; font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.45em; text-transform: uppercase; margin-bottom: 1.4rem; transition: color 8s ease; }
+       .ai-tr { font-size: clamp(1rem, 2.5vw, 1.2rem); font-weight: 300; line-height: 1.9; font-style: italic; margin-bottom: 1.2rem; transition: color 8s ease; }
+       .ai-fa { font-size: clamp(1.1rem, 3vw, 1.5rem); direction: rtl; line-height: 1.9; margin-bottom: 0.5rem; transition: color 8s ease; }
+       .ai-anlam { font-size: 0.75rem; font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.18em; transition: color 8s ease; }
+       .loading-dots { display: inline-flex; gap: 6px; align-items: center; }
+       .loading-dots span { width: 3px; height: 3px; border-radius: 50%; animation: dotPulse 1.4s ease-in-out infinite; }
+       .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+       .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+       @keyframes dotPulse { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
+       @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+       .sparkle { position: fixed; pointer-events: none; z-index: 5; font-size: 0.7rem; animation: sparkleFly 2s ease forwards; opacity: 0; }
+       @keyframes sparkleFly { 0% { opacity: 0; transform: translateY(0) scale(0); } 30% { opacity: 1; transform: translateY(-20px) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(0.5); } }
+       .feather-decor { position: fixed; pointer-events: none; z-index: 1; font-size: 4rem; animation: featherFloat 8s ease-in-out infinite; transition: opacity 8s ease; }
+       .feather-decor.f1 { top: 15%; left: 3%; animation-delay: 0s; }
+       .feather-decor.f2 { top: 60%; right: 3%; animation-delay: 3s; }
+       .feather-decor.f3 { bottom: 15%; left: 5%; animation-delay: 5s; font-size: 3rem; }
+       @keyframes featherFloat { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
+   </style>
 </head>
 <body>
 <div class="corner-glow tl"></div>
 <div class="corner-glow br"></div>
 <div class="corner-glow tr"></div>
 <div class="corner-glow bl"></div>
-<div class="farsi-bg top-left">ف</div>
-<div class="farsi-bg bottom-right">ه</div>
-<div class="gold-line left-line"></div>
-<div class="gold-line right-line"></div>
-<div class="feather-decor f1">🪶</div>
-<div class="feather-decor f2">🪶</div>
-<div class="feather-decor f3">🕊️</div>
+<div class="farsi-bg top-left" id="farsi-bg-tl">ف</div>
+<div class="farsi-bg bottom-right" id="farsi-bg-br">ه</div>
+<div class="gold-line left-line" id="line-l"></div>
+<div class="gold-line right-line" id="line-r"></div>
+<div class="feather-decor f1" id="feather1">🪶</div>
+<div class="feather-decor f2" id="feather2">🪶</div>
+<div class="feather-decor f3" id="feather3">🕊️</div>
 <div class="side-decor left" id="side-left"></div>
 <div class="side-decor right" id="side-right"></div>
 <div class="stars" id="stars"></div>
+
 <div id="password-screen">
-    <div class="farsi-title">فرشته</div>
-    <div class="subtitle">Bir şeyler seni bekliyor</div>
-    <div class="divider"></div>
-    <div class="password-container">
-        <input type="text" id="password-input" placeholder="şifreni gir..." autocomplete="off" autocorrect="off" spellcheck="false">
-    </div>
-    <button id="enter-btn">Gir</button>
-    <div id="error-msg">Yanlış şifre...</div>
+   <div class="farsi-title" id="farsi-title">فرشته</div>
+   <div class="subtitle" id="subtitle">Bir şeyler seni bekliyor</div>
+   <div class="divider" id="divider-pw"></div>
+   <div class="password-container">
+       <input type="text" id="password-input" placeholder="şifreni gir..." autocomplete="off" autocorrect="off" spellcheck="false">
+   </div>
+   <button id="enter-btn">Gir</button>
+   <div id="error-msg">Yanlış şifre...</div>
 </div>
+
 <div id="main-screen">
-    <div class="angel-container">
-        <div class="angel-glow"></div>
-        <div class="angel" id="angel">🕊️</div>
-    </div>
-    <div class="farsi-header" id="farsi-header">فرشته</div>
-    <div class="farsi-meaning" id="farsi-meaning">Fereshteh · Melek</div>
-    <div class="divider"></div>
-    <div class="message-block" id="msg1">
-        <div class="message-tr">
-            Bazı insanlar hayatına girer, fark etmeden her şeyi değiştirir.
-            <span>Sen de öylesin.</span>
-        </div>
-    </div>
-    <div class="message-block" id="msg2">
-        <div class="message-fa">
-            <div class="message-fa-text">فرشته‌ای که نمی‌دانست فرشته است</div>
-            <div class="message-fa-meaning">melek olduğunu bilmeyen melek</div>
-        </div>
-    </div>
-    <div class="message-block" id="msg3">
-        <div class="message-tr">Seninle geçen her an, farkında bile olmadan aklımda kalıyor.</div>
-    </div>
-    <div class="divider" id="divider2" style="opacity:0; margin: 2rem auto;"></div>
-    <div class="ai-message-block" id="ai-block">
-        <div class="ai-label">✦ bu an için</div>
-        <div id="ai-content">
-            <div class="loading-dots"><span></span><span></span><span></span></div>
-        </div>
-    </div>
+   <div class="angel-container">
+       <div class="angel-glow" id="angel-glow"></div>
+       <div class="angel" id="angel">🕊️</div>
+   </div>
+   <div class="farsi-header" id="farsi-header">فرشته</div>
+   <div class="farsi-meaning" id="farsi-meaning">Fereshteh · Melek</div>
+   <div class="divider" id="divider1"></div>
+   <div class="message-block" id="msg1">
+       <div class="message-tr" id="msg1-tr">
+           Bazı insanlar hayatına girer, fark etmeden her şeyi değiştirir.
+           <span id="msg1-span">Sen de öylesin.</span>
+       </div>
+   </div>
+   <div class="message-block" id="msg2">
+       <div class="message-fa" id="msg2-fa">
+           <div class="message-fa-text" id="msg2-fa-text">فرشته‌ای که نمی‌دانست فرشته است</div>
+           <div class="message-fa-meaning" id="msg2-fa-meaning">melek olduğunu bilmeyen melek</div>
+       </div>
+   </div>
+   <div class="message-block" id="msg3">
+       <div class="message-tr" id="msg3-tr">Seninle geçen her an, farkında bile olmadan aklımda kalıyor.</div>
+   </div>
+   <div class="divider" id="divider2" style="opacity:0; margin: 2rem auto;"></div>
+   <div class="ai-message-block" id="ai-block">
+       <div class="ai-label" id="ai-label">✦ bu an için</div>
+       <div id="ai-content">
+           <div class="loading-dots"><span></span><span></span><span></span></div>
+       </div>
+   </div>
 </div>
+
 <script>
-    const starsContainer = document.getElementById('stars');
-    for (let i = 0; i < 100; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-        star.style.left = Math.random() * 100 + '%';
-        star.style.top = Math.random() * 100 + '%';
-        star.style.setProperty('--dur', (2 + Math.random() * 5) + 's');
-        star.style.setProperty('--op', (0.15 + Math.random() * 0.5).toString());
-        star.style.animationDelay = Math.random() * 5 + 's';
-        const size = 1 + Math.random() * 1.5;
-        star.style.width = size + 'px';
-        star.style.height = size + 'px';
-        const colors = ['#c9a84c', '#c4a0b0', '#b0a8c8', '#f0ead6', '#e8c97a'];
-        star.style.background = colors[Math.floor(Math.random() * colors.length)];
-        starsContainer.appendChild(star);
-    }
+   const themes = [
+       {
+           name: 'gece',
+           bg: '#0a0a14', text: '#f0ead6', gold: '#c9a84c', goldLight: '#e8c97a',
+           muted: '#8a8499', rose: '#c4a0b0', lavender: '#b0a8c8',
+           farsi: 'rgba(201,168,76,0.03)',
+           line: 'linear-gradient(to bottom, transparent, rgba(201,168,76,0.15), transparent)',
+           divider: 'linear-gradient(90deg, transparent, #c9a84c, transparent)',
+           angelGlow: 'radial-gradient(circle, rgba(201,168,76,0.06) 0%, rgba(196,160,176,0.04) 50%, transparent 70%)',
+           featherOp: '0.04',
+           starColors: ['#c9a84c','#c4a0b0','#b0a8c8','#f0ead6','#e8c97a'],
+           btnBorder: 'rgba(201,168,76,0.3)', inputBorder: 'rgba(201,168,76,0.25)',
+       },
+       {
+           name: 'gün batımı',
+           bg: '#1a0f0a', text: '#faebd7', gold: '#e8a87c', goldLight: '#f5c9a0',
+           muted: '#a08070', rose: '#d4907a', lavender: '#c4a89a',
+           farsi: 'rgba(232,168,124,0.04)',
+           line: 'linear-gradient(to bottom, transparent, rgba(232,168,124,0.15), transparent)',
+           divider: 'linear-gradient(90deg, transparent, #e8a87c, transparent)',
+           angelGlow: 'radial-gradient(circle, rgba(232,168,124,0.08) 0%, rgba(212,144,122,0.04) 50%, transparent 70%)',
+           featherOp: '0.05',
+           starColors: ['#e8a87c','#d4907a','#f5c9a0','#faebd7','#c4a89a'],
+           btnBorder: 'rgba(232,168,124,0.3)', inputBorder: 'rgba(232,168,124,0.25)',
+       },
+       {
+           name: 'şafak',
+           bg: '#f5f0f8', text: '#3a2a4a', gold: '#9b7ab0', goldLight: '#b899c8',
+           muted: '#8a7a9a', rose: '#c4a0b8', lavender: '#9490b8',
+           farsi: 'rgba(155,122,176,0.05)',
+           line: 'linear-gradient(to bottom, transparent, rgba(155,122,176,0.2), transparent)',
+           divider: 'linear-gradient(90deg, transparent, #9b7ab0, transparent)',
+           angelGlow: 'radial-gradient(circle, rgba(155,122,176,0.08) 0%, rgba(196,160,184,0.05) 50%, transparent 70%)',
+           featherOp: '0.08',
+           starColors: ['#9b7ab0','#c4a0b8','#9490b8','#3a2a4a','#b899c8'],
+           btnBorder: 'rgba(155,122,176,0.4)', inputBorder: 'rgba(155,122,176,0.3)',
+       },
+       {
+           name: 'gece yarısı',
+           bg: '#080814', text: '#e8e0f0', gold: '#9090d0', goldLight: '#b0b0e8',
+           muted: '#6a6890', rose: '#9880b8', lavender: '#8090c8',
+           farsi: 'rgba(144,144,208,0.03)',
+           line: 'linear-gradient(to bottom, transparent, rgba(144,144,208,0.15), transparent)',
+           divider: 'linear-gradient(90deg, transparent, #9090d0, transparent)',
+           angelGlow: 'radial-gradient(circle, rgba(144,144,208,0.07) 0%, rgba(152,128,184,0.04) 50%, transparent 70%)',
+           featherOp: '0.04',
+           starColors: ['#9090d0','#9880b8','#8090c8','#e8e0f0','#b0b0e8'],
+           btnBorder: 'rgba(144,144,208,0.3)', inputBorder: 'rgba(144,144,208,0.25)',
+       },
+       {
+           name: 'sabah',
+           bg: '#f8f4ee', text: '#3a2e20', gold: '#b8943c', goldLight: '#d4aa58',
+           muted: '#9a8870', rose: '#c49878', lavender: '#a89878',
+           farsi: 'rgba(184,148,60,0.04)',
+           line: 'linear-gradient(to bottom, transparent, rgba(184,148,60,0.18), transparent)',
+           divider: 'linear-gradient(90deg, transparent, #b8943c, transparent)',
+           angelGlow: 'radial-gradient(circle, rgba(184,148,60,0.07) 0%, rgba(196,152,120,0.04) 50%, transparent 70%)',
+           featherOp: '0.07',
+           starColors: ['#b8943c','#c49878','#a89878','#3a2e20','#d4aa58'],
+           btnBorder: 'rgba(184,148,60,0.3)', inputBorder: 'rgba(184,148,60,0.25)',
+       }
+   ];
 
-    function createSideStars(containerId) {
-        const container = document.getElementById(containerId);
-        const symbols = ['✦', '✧', '⋆', '˚', '·', '✵', '✴'];
-        for (let i = 0; i < 18; i++) {
-            const star = document.createElement('div');
-            star.className = 'side-star';
-            star.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-            star.style.left = (Math.random() * 80) + '%';
-            star.style.top = (Math.random() * 100) + '%';
-            star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
-            star.style.setProperty('--op', (0.2 + Math.random() * 0.5).toString());
-            star.style.setProperty('--sz', (0.5 + Math.random() * 0.7) + 'rem');
-            star.style.animationDelay = Math.random() * 4 + 's';
-            const colors = ['#c9a84c', '#c4a0b0', '#b0a8c8', '#e8c97a'];
-            star.style.color = colors[Math.floor(Math.random() * colors.length)];
-            container.appendChild(star);
-        }
-    }
-    createSideStars('side-left');
-    createSideStars('side-right');
+   let currentTheme = 0;
 
-    function createSparkle(x, y) {
-        const sparkles = ['✦', '✧', '·', '⋆', '˚', '✵'];
-        for (let i = 0; i < 4; i++) {
-            setTimeout(() => {
-                const s = document.createElement('div');
-                s.className = 'sparkle';
-                s.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
-                s.style.left = (x + (Math.random() - 0.5) * 60) + 'px';
-                s.style.top = (y + (Math.random() - 0.5) * 60) + 'px';
-                const colors = ['#c9a84c', '#c4a0b0', '#b0a8c8', '#e8c97a'];
-                s.style.color = colors[Math.floor(Math.random() * colors.length)];
-                document.body.appendChild(s);
-                setTimeout(() => s.remove(), 2000);
-            }, i * 150);
-        }
-    }
+   function applyTheme(t) {
+       document.body.style.backgroundColor = t.bg;
+       document.body.style.color = t.text;
+       const setColor = (id, color) => { const el = document.getElementById(id); if(el) el.style.color = color; };
+       const setStyle = (id, prop, val) => { const el = document.getElementById(id); if(el) el.style[prop] = val; };
+       setColor('farsi-title', t.gold);
+       setColor('subtitle', t.muted);
+       setColor('farsi-header', t.gold);
+       setColor('farsi-meaning', t.muted);
+       setColor('msg1-tr', t.text);
+       setColor('msg1-span', t.text);
+       setColor('msg2-fa-text', t.goldLight);
+       setColor('msg2-fa-meaning', t.rose);
+       setColor('msg3-tr', t.text);
+       setColor('ai-label', t.rose);
+       document.querySelectorAll('.ai-tr').forEach(el => el.style.color = t.text);
+       document.querySelectorAll('.ai-fa').forEach(el => el.style.color = t.goldLight);
+       document.querySelectorAll('.ai-anlam').forEach(el => el.style.color = t.lavender);
+       const input = document.getElementById('password-input');
+       if(input) { input.style.color = t.text; input.style.borderBottomColor = t.inputBorder; }
+       const btn = document.getElementById('enter-btn');
+       if(btn) { btn.style.color = t.gold; btn.style.borderColor = t.btnBorder; btn.style.border = `1px solid ${t.btnBorder}`; }
+       document.querySelectorAll('.divider').forEach(el => el.style.background = t.divider);
+       setStyle('line-l', 'background', t.line);
+       setStyle('line-r', 'background', t.line);
+       setStyle('angel-glow', 'background', t.angelGlow);
+       const angel = document.getElementById('angel');
+       if(angel) angel.style.filter = `drop-shadow(0 0 20px ${t.gold}44) drop-shadow(0 0 40px ${t.rose}22)`;
+       setStyle('farsi-bg-tl', 'color', t.farsi);
+       setStyle('farsi-bg-br', 'color', t.farsi);
+       ['feather1','feather2','feather3'].forEach(id => { const el = document.getElementById(id); if(el) el.style.opacity = t.featherOp; });
+       document.querySelectorAll('.loading-dots span').forEach(el => el.style.background = t.gold);
+       document.querySelectorAll('.star').forEach(el => { el.style.background = t.starColors[Math.floor(Math.random() * t.starColors.length)]; });
+       document.querySelectorAll('.side-star').forEach(el => { el.style.color = t.starColors[Math.floor(Math.random() * t.starColors.length)]; });
+       const mfa = document.getElementById('msg2-fa');
+       if(mfa) mfa.style.borderTopColor = t.gold + '22';
+       const aiBlock = document.getElementById('ai-block');
+       if(aiBlock) aiBlock.style.borderTopColor = t.gold + '15';
+   }
 
-    document.addEventListener('click', (e) => {
-        if (document.getElementById('main-screen').style.display === 'block') {
-            createSparkle(e.clientX, e.clientY);
-        }
-    });
+   applyTheme(themes[0]);
+   setInterval(() => {
+       currentTheme = (currentTheme + 1) % themes.length;
+       applyTheme(themes[currentTheme]);
+   }, 20000);
 
-    async function checkPassword() {
-        const input = document.getElementById('password-input').value.trim();
-        try {
-            const res = await fetch('/verify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password: input })
-            });
-            const data = await res.json();
-            if (data.success) {
-                showMainScreen();
-            } else {
-                const errMsg = document.getElementById('error-msg');
-                errMsg.style.opacity = '1';
-                document.getElementById('password-input').style.borderBottomColor = 'rgba(196,160,176,0.3)';
-                setTimeout(() => {
-                    errMsg.style.opacity = '0';
-                    document.getElementById('password-input').style.borderBottomColor = 'rgba(201,168,76,0.25)';
-                }, 2000);
-            }
-        } catch(e) { console.error(e); }
-    }
+   const starsContainer = document.getElementById('stars');
+   for (let i = 0; i < 100; i++) {
+       const star = document.createElement('div');
+       star.className = 'star';
+       star.style.left = Math.random() * 100 + '%';
+       star.style.top = Math.random() * 100 + '%';
+       star.style.setProperty('--dur', (2 + Math.random() * 5) + 's');
+       star.style.setProperty('--op', (0.15 + Math.random() * 0.5).toString());
+       star.style.animationDelay = Math.random() * 5 + 's';
+       const size = 1 + Math.random() * 1.5;
+       star.style.width = size + 'px';
+       star.style.height = size + 'px';
+       star.style.background = themes[0].starColors[Math.floor(Math.random() * themes[0].starColors.length)];
+       starsContainer.appendChild(star);
+   }
 
-    document.getElementById('enter-btn').addEventListener('click', checkPassword);
-    document.getElementById('password-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') checkPassword();
-    });
+   function createSideStars(containerId) {
+       const container = document.getElementById(containerId);
+       const symbols = ['✦', '✧', '⋆', '˚', '·', '✵', '✴'];
+       for (let i = 0; i < 18; i++) {
+           const star = document.createElement('div');
+           star.className = 'side-star';
+           star.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+           star.style.left = (Math.random() * 80) + '%';
+           star.style.top = (Math.random() * 100) + '%';
+           star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+           star.style.setProperty('--op', (0.2 + Math.random() * 0.5).toString());
+           star.style.setProperty('--sz', (0.5 + Math.random() * 0.7) + 'rem');
+           star.style.animationDelay = Math.random() * 4 + 's';
+           star.style.color = themes[0].starColors[Math.floor(Math.random() * themes[0].starColors.length)];
+           container.appendChild(star);
+       }
+   }
+   createSideStars('side-left');
+   createSideStars('side-right');
 
-    function showMainScreen() {
-        const pw = document.getElementById('password-screen');
-        pw.style.transition = 'opacity 1s ease';
-        pw.style.opacity = '0';
-        setTimeout(() => {
-            pw.style.display = 'none';
-            const main = document.getElementById('main-screen');
-            main.style.display = 'block';
-            runSequence();
-        }, 1000);
-    }
+   function createSparkle(x, y) {
+       const t = themes[currentTheme];
+       const sparkles = ['✦', '✧', '·', '⋆', '˚', '✵'];
+       for (let i = 0; i < 4; i++) {
+           setTimeout(() => {
+               const s = document.createElement('div');
+               s.className = 'sparkle';
+               s.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+               s.style.left = (x + (Math.random() - 0.5) * 60) + 'px';
+               s.style.top = (y + (Math.random() - 0.5) * 60) + 'px';
+               s.style.color = t.starColors[Math.floor(Math.random() * t.starColors.length)];
+               document.body.appendChild(s);
+               setTimeout(() => s.remove(), 2000);
+           }, i * 150);
+       }
+   }
 
-    function animateEl(el, delay, duration = 1200) {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                el.style.transition = `opacity ${duration}ms ease, transform ${duration}ms ease`;
-                el.style.transform = 'translateY(20px)';
-                el.style.opacity = '0';
-                requestAnimationFrame(() => {
-                    setTimeout(() => {
-                        el.style.transform = 'translateY(0)';
-                        el.style.opacity = '1';
-                        setTimeout(resolve, duration);
-                    }, 50);
-                });
-            }, delay);
-        });
-    }
+   document.addEventListener('click', (e) => {
+       if (document.getElementById('main-screen').style.display === 'block') createSparkle(e.clientX, e.clientY);
+   });
 
-    async function runSequence() {
-        const angel = document.getElementById('angel');
-        setTimeout(() => { angel.style.transition = 'opacity 2s ease'; angel.style.opacity = '1'; }, 300);
-        await animateEl(document.getElementById('farsi-header'), 800);
-        await animateEl(document.getElementById('farsi-meaning'), 200);
-        await animateEl(document.getElementById('msg1'), 600);
-        await animateEl(document.getElementById('msg2'), 800);
-        await animateEl(document.getElementById('msg3'), 800);
-        setTimeout(() => { document.getElementById('divider2').style.transition = 'opacity 1s ease'; document.getElementById('divider2').style.opacity = '1'; }, 500);
-        await animateEl(document.getElementById('ai-block'), 800);
-        fetchAIMessage();
-    }
+   async function checkPassword() {
+       const input = document.getElementById('password-input').value.trim();
+       try {
+           const res = await fetch('/verify', {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ password: input })
+           });
+           const data = await res.json();
+           if (data.success) {
+               showMainScreen();
+           } else {
+               const errMsg = document.getElementById('error-msg');
+               errMsg.style.opacity = '1';
+               setTimeout(() => { errMsg.style.opacity = '0'; }, 2000);
+           }
+       } catch(e) { console.error(e); }
+   }
 
-    async function fetchAIMessage() {
-        try {
-            const res = await fetch('/get_message?t=' + Date.now());
-            const data = await res.json();
-            if (data.success) {
-                const content = document.getElementById('ai-content');
-                content.style.transition = 'opacity 0.5s ease';
-                content.style.opacity = '0';
-                setTimeout(() => {
-                    content.innerHTML = `
-                        <div class="ai-tr">${data.tr}</div>
-                        <div class="ai-fa">${data.fa}</div>
-                        <div class="ai-anlam">${data.anlam}</div>
-                    `;
-                    content.style.opacity = '1';
-                }, 500);
-            }
-        } catch(e) {
-            document.getElementById('ai-content').innerHTML = `
-                <div class="ai-tr">Her bakışında farklı bir dünya görüyorum.</div>
-                <div class="ai-fa">تو آرامشی هستی که انتظارش را نداشتم</div>
-                <div class="ai-anlam">sen beklenmediğim bir huzursun</div>
-            `;
-        }
-    }
+   document.getElementById('enter-btn').addEventListener('click', checkPassword);
+   document.getElementById('password-input').addEventListener('keypress', (e) => {
+       if (e.key === 'Enter') checkPassword();
+   });
+
+   function showMainScreen() {
+       const pw = document.getElementById('password-screen');
+       pw.style.transition = 'opacity 1s ease';
+       pw.style.opacity = '0';
+       setTimeout(() => {
+           pw.style.display = 'none';
+           const main = document.getElementById('main-screen');
+           main.style.display = 'block';
+           runSequence();
+       }, 1000);
+   }
+
+   function animateEl(el, delay, duration = 1200) {
+       return new Promise(resolve => {
+           setTimeout(() => {
+               el.style.transition = `opacity ${duration}ms ease, transform ${duration}ms ease`;
+               el.style.transform = 'translateY(20px)';
+               el.style.opacity = '0';
+               requestAnimationFrame(() => {
+                   setTimeout(() => {
+                       el.style.transform = 'translateY(0)';
+                       el.style.opacity = '1';
+                       setTimeout(resolve, duration);
+                   }, 50);
+               });
+           }, delay);
+       });
+   }
+
+   async function runSequence() {
+       const angel = document.getElementById('angel');
+       setTimeout(() => { angel.style.transition = 'opacity 2s ease'; angel.style.opacity = '1'; }, 300);
+       await animateEl(document.getElementById('farsi-header'), 800);
+       await animateEl(document.getElementById('farsi-meaning'), 200);
+       await animateEl(document.getElementById('msg1'), 600);
+       await animateEl(document.getElementById('msg2'), 800);
+       await animateEl(document.getElementById('msg3'), 800);
+       setTimeout(() => { document.getElementById('divider2').style.transition = 'opacity 1s ease'; document.getElementById('divider2').style.opacity = '1'; }, 500);
+       await animateEl(document.getElementById('ai-block'), 800);
+       fetchAIMessage();
+   }
+
+   async function fetchAIMessage() {
+       try {
+           const res = await fetch('/get_message?t=' + Date.now());
+           const data = await res.json();
+           if (data.success) {
+               const content = document.getElementById('ai-content');
+               content.style.transition = 'opacity 0.5s ease';
+               content.style.opacity = '0';
+               const t = themes[currentTheme];
+               setTimeout(() => {
+                   content.innerHTML = `
+                       <div class="ai-tr" style="color:${t.text}">${data.tr}</div>
+                       <div class="ai-fa" style="color:${t.goldLight}">${data.fa}</div>
+                       <div class="ai-anlam" style="color:${t.lavender}">${data.anlam}</div>
+                   `;
+                   content.style.opacity = '1';
+               }, 500);
+           }
+       } catch(e) {
+           document.getElementById('ai-content').innerHTML = `
+               <div class="ai-tr">Her bakışında farklı bir dünya görüyorum.</div>
+               <div class="ai-fa">تو آرامشی هستی که انتظارش را نداشتم</div>
+               <div class="ai-anlam">sen beklenmediğim bir huzursun</div>
+           `;
+       }
+   }
 </script>
 </body>
 </html>
