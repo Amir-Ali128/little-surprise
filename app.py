@@ -109,8 +109,8 @@ def index():
 def verify():
     data = request.get_json() or {}
     password = data.get("password", "").strip().lower().replace(" ", "")
-    expected_password = os.environ.get("SITE_PASSWORD", "").strip().lower().replace(" ", "")
-    return jsonify({"success": bool(expected_password) and password == expected_password})
+    expected_password = os.environ.get("SITE_PASSWORD", "09tannaz").strip().lower().replace(" ", "")
+    return jsonify({"success": password == expected_password})
 
 
 def get_fallback_message():
