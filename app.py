@@ -3,6 +3,7 @@ import anthropic
 import os
 import json
 import random
+import re
 from pathlib import Path
 
 app = Flask(__name__)
@@ -30,6 +31,47 @@ def load_messages():
 
 MESSAGE_DB = load_messages()
 
+
+def build_theme(name, bg, text, gold, gold_light, muted, rose, lavender):
+    rgb = tuple(int(gold.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    rgb_text = ",".join(map(str, rgb))
+
+    return {
+        "name": name,
+        "bg": bg,
+        "text": text,
+        "gold": gold,
+        "goldLight": gold_light,
+        "muted": muted,
+        "rose": rose,
+        "lavender": lavender,
+        "farsi": f"rgba({rgb_text},0.08)",
+        "line": f"linear-gradient(to bottom, transparent, rgba({rgb_text},0.28), transparent)",
+        "divider": f"linear-gradient(90deg, transparent, {gold}, transparent)",
+        "angelGlow": (
+            f"radial-gradient(circle, rgba({rgb_text},0.18) 0%, "
+            f"rgba({rgb_text},0.08) 50%, transparent 70%)"
+        ),
+        "featherOp": "0.10",
+        "starColors": [gold, rose, lavender, text, gold_light],
+        "btnBorder": f"rgba({rgb_text},0.45)",
+        "inputBorder": f"rgba({rgb_text},0.35)"
+    }
+
+
+PASTEL_THEMES = [
+    build_theme("lavanta", "#f6f2ff", "#4c4666", "#b79ced", "#d8c8f5", "#8f87a6", "#d8bfd8", "#c7b8ea"),
+    build_theme("pudra", "#fff5f7", "#5a4b4f", "#e8b4c8", "#f6d3df", "#a58b94", "#e9afc2", "#dcc8e8"),
+    build_theme("mint", "#f2fff8", "#42544b", "#9ed8c1", "#cfefe2", "#7a9c8e", "#bfdccf", "#d7f2e5"),
+    build_theme("bebek mavisi", "#f3faff", "#42566b", "#a7d3f3", "#d3ebfa", "#8098a8", "#c8dcec", "#c8dfff"),
+    build_theme("şeftali", "#fff7f1", "#5b4b41", "#f4c49a", "#fbe2ca", "#a78e7c", "#f0c7af", "#e8d7c8"),
+    build_theme("vanilya", "#fffdf4", "#5a533f", "#e9d79b", "#f8efcb", "#a69b76", "#eadbb7", "#e8dfc8"),
+    build_theme("adaçayı", "#f5faf3", "#495545", "#b7d4a8", "#daecd1", "#86967d", "#d4dfc8", "#dcead4"),
+    build_theme("lila", "#fbf6ff", "#514563", "#c5a8f2", "#e1d0fa", "#8f84a5", "#d9c2ec", "#cdb7f4"),
+    build_theme("bulut", "#fafbfc", "#4d545c", "#c7ced8", "#e5e9ee", "#8a9096", "#dadde2", "#d7dee8"),
+    build_theme("gül kurusu", "#fff7f8", "#5b464c", "#d9a5b3", "#f0cdd6", "#9a7f86", "#dfafba", "#e8cbd4")
+]
+
 SYSTEM_PROMPT = """Sen Türkçe ve Farsça bilen, şiirsel ama abartısız yazan bir yazarsın.
 Senden kısa, anlamlı ve samimi mesajlar üretmeni istiyorum.
 
@@ -49,7 +91,18 @@ ANLAM: [farsça mesajın türkçe anlamı]"""
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    html = render_template("index.html")
+    themes_json = json.dumps(PASTEL_THEMES, ensure_ascii=False)
+
+    html = re.sub(
+        r"const themes\s*=\s*\[.*?\];",
+        f"const themes = {themes_json};",
+        html,
+        count=1,
+        flags=re.DOTALL
+    )
+    html = html.replace("}, 20000);", "}, 30000);")
+    return html
 
 
 @app.route("/verify", methods=["POST"])
