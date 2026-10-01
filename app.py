@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, session
 import anthropic
+import hashlib
 import hmac
 import json
 import os
@@ -10,7 +11,13 @@ from pathlib import Path
 
 app = Flask(__name__)
 
-secret_seed = (\n    os.environ.get("SECRET_KEY")\n    or os.environ.get("SITE_PASSWORD")\n    or os.environ.get("ACCESS_PASSWORD")\n    or secrets.token_hex(32)\n)\napp.secret_key = hashlib.sha256(secret_seed.encode("utf-8")).digest()
+secret_seed = (
+    os.environ.get("SECRET_KEY")
+    or os.environ.get("SITE_PASSWORD")
+    or os.environ.get("ACCESS_PASSWORD")
+    or secrets.token_hex(32)
+)
+app.secret_key = hashlib.sha256(secret_seed.encode("utf-8")).digest()
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
@@ -68,6 +75,7 @@ def add_security_headers(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "no-referrer"
     response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
     return response
 
 
