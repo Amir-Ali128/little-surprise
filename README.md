@@ -1,17 +1,16 @@
-# A Small Gift
+# Little Surprise — Midnight Angel
 
-This small project was made to bring a smile to someone special.
+A private, mobile-first digital gift built around a black / rose-gold / carbon-fiber visual language.
 
-Some gifts do not fit inside a box.  
-Some are hidden in a few lines of code, in tiny details, and in a little bit of effort.
+The experience is intentionally small and personal:
 
-This is one of them.
+1. A password-protected entrance
+2. A sealed digital envelope
+3. A four-part letter revealed one step at a time
+4. A final Turkish + Farsi message generated for that moment
+5. Curated local fallback messages if the AI provider is unavailable
 
-— Amir
-
----
-
-## Project Structure
+## Project structure
 
 ```txt
 little-surprise/
@@ -31,17 +30,22 @@ little-surprise/
     └── generate_qr.py
 ```
 
-## Environment Variables
+## Environment variables
 
-Set these variables on Render:
+Set these on Render:
 
 ```txt
 ANTHROPIC_API_KEY=your_api_key_here
-ACCESS_PASSWORD=your_access_password_here
+SITE_PASSWORD=your_private_password
+FLASK_SECRET_KEY=a_long_random_secret
 MODEL_NAME=claude-sonnet-4-6
 ```
 
-`MODEL_NAME` is optional. If you do not set it, the app uses the default value in `app.py`.
+`MODEL_NAME` is optional.
+
+For backward compatibility, `ACCESS_PASSWORD` is also accepted if `SITE_PASSWORD` is not present. New deployments should use `SITE_PASSWORD`.
+
+Do not commit real passwords or API keys to the repository.
 
 ## Deploy on Render
 
@@ -57,10 +61,16 @@ Start command:
 gunicorn app:app --bind 0.0.0.0:$PORT
 ```
 
-## Generate QR Code
+## Generate the physical QR code
 
 ```bash
 python scripts/generate_qr.py https://your-render-url.onrender.com
 ```
 
-This creates a `tannaz_qr.png` file.
+This creates `tannaz_qr.png` by default.
+
+## V2 notes
+
+Midnight Angel removes the rotating pastel themes in favor of one consistent visual identity: near-black, rose gold, soft champagne highlights, and a deliberately subtle carbon-fiber texture.
+
+The message endpoint is session-protected. A successful password verification creates the session required to request the final generated message.
