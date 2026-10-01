@@ -775,68 +775,172 @@
       right: max(16px, env(safe-area-inset-right));
       bottom: max(18px, env(safe-area-inset-bottom));
       z-index: 18;
-      width: 44px;
-      height: 44px;
-      border: 1px solid rgba(201,151,126,.16);
+      width: 56px;
+      height: 56px;
+      border: 1px solid rgba(201,151,126,.18);
       border-radius: 50%;
-      background: rgba(9,9,12,.58);
+      background:
+        radial-gradient(circle at 34% 28%, rgba(255,255,255,.08), transparent 24%),
+        linear-gradient(145deg, rgba(24,25,29,.92), rgba(7,8,10,.96));
       display: grid;
       place-items: center;
       cursor: pointer;
-      opacity: .43;
-      box-shadow: 0 8px 24px rgba(0,0,0,.30);
-      transition: opacity .25s ease, transform .25s ease, border-color .25s ease;
+      opacity: .66;
+      box-shadow:
+        0 11px 28px rgba(0,0,0,.42),
+        inset 0 1px 0 rgba(255,255,255,.045),
+        inset 0 -1px 0 rgba(0,0,0,.8);
+      transition:
+        opacity .25s ease,
+        transform .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
       touch-action: none;
       user-select: none;
       -webkit-user-select: none;
+      overflow: visible;
+      isolation: isolate;
+    }
+
+    .carbon-heart-trigger::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.035);
+      box-shadow: inset 0 0 14px rgba(0,0,0,.48);
+      pointer-events: none;
+    }
+
+    .carbon-heart-trigger::after {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 76px;
+      top: -10px;
+      left: -42px;
+      transform: rotate(24deg);
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.02),
+        rgba(231,195,177,.24),
+        rgba(255,255,255,.04),
+        transparent
+      );
+      filter: blur(.4px);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 4;
     }
 
     .carbon-heart-trigger:hover,
     .carbon-heart-trigger:focus-visible {
-      opacity: .82;
-      border-color: rgba(201,151,126,.34);
+      opacity: .96;
+      transform: translateY(-1px);
+      border-color: rgba(201,151,126,.38);
+      box-shadow:
+        0 13px 32px rgba(0,0,0,.48),
+        0 0 0 3px rgba(201,151,126,.045),
+        inset 0 1px 0 rgba(255,255,255,.055);
       outline: none;
     }
 
-    .carbon-heart-trigger .carbon-heart {
-      font-size: 1.22rem;
-      line-height: 1;
-      color: #26282d;
-      text-shadow:
-        0 0 0.6px rgba(231,195,177,.55),
-        0 0 12px rgba(201,151,126,.08);
-      background:
-        repeating-linear-gradient(45deg,
-          #303238 0 2px,
-          #15161a 2px 4px);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .carbon-heart {
+      position: relative;
+      z-index: 2;
+      width: 36px;
+      height: 33px;
+      display: block;
+      overflow: visible;
+      filter:
+        drop-shadow(0 5px 5px rgba(0,0,0,.58))
+        drop-shadow(0 0 6px rgba(201,151,126,.06));
+      transform: translateY(1px);
     }
 
-    .carbon-heart-trigger .hold-ring {
+    .cf-body {
+      fill: url(#cfPattern);
+      stroke: rgba(229,218,211,.18);
+      stroke-width: 1.25;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .cf-depth {
+      fill: none;
+      stroke: rgba(0,0,0,.58);
+      stroke-width: 3.2;
+      vector-effect: non-scaling-stroke;
+      transform: translateY(1.4px);
+    }
+
+    .cf-edge {
+      fill: none;
+      stroke: rgba(201,151,126,.34);
+      stroke-width: .72;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .cf-gloss {
+      fill: url(#cfGloss);
+      opacity: .46;
+    }
+
+    .cf-fiber-highlight {
+      fill: none;
+      stroke: rgba(255,255,255,.12);
+      stroke-width: .75;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .hold-ring {
       position: absolute;
-      inset: -4px;
+      inset: -5px;
       border-radius: 50%;
       opacity: 0;
       background: conic-gradient(var(--rose-light) 0deg, transparent 0deg);
       -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
       mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
+      filter: drop-shadow(0 0 5px rgba(201,151,126,.30));
     }
 
     .carbon-heart-trigger.holding {
-      opacity: .9;
-      transform: scale(1.04);
+      opacity: 1;
+      transform: scale(1.055);
+      border-color: rgba(201,151,126,.40);
+      box-shadow:
+        0 14px 34px rgba(0,0,0,.52),
+        0 0 18px rgba(201,151,126,.10),
+        inset 0 1px 0 rgba(255,255,255,.07);
     }
 
     .carbon-heart-trigger.holding .hold-ring {
-      opacity: .72;
+      opacity: .88;
       animation: holdRing 3s linear forwards;
+    }
+
+    .carbon-heart-trigger.holding::after {
+      opacity: 1;
+      animation: carbonSheen 1.35s ease-in-out infinite;
+    }
+
+    .carbon-heart-trigger.holding .carbon-heart {
+      filter:
+        drop-shadow(0 5px 5px rgba(0,0,0,.62))
+        drop-shadow(0 0 9px rgba(201,151,126,.14));
     }
 
     @keyframes holdRing {
       from { background: conic-gradient(var(--rose-light) 0deg, transparent 0deg); }
       to { background: conic-gradient(var(--rose-light) 360deg, transparent 360deg); }
+    }
+
+    @keyframes carbonSheen {
+      0% { left: -42px; opacity: 0; }
+      25% { opacity: .58; }
+      70% { opacity: .18; }
+      100% { left: 70px; opacity: 0; }
     }
 
     .easter-overlay {
@@ -1057,9 +1161,34 @@
     <section class="screen experience hidden" id="experience">
       <div class="stage-label">for Tannaz · برای تو</div>
 
-      <button class="carbon-heart-trigger" id="carbon-heart-trigger" type="button" aria-label="Kalp detayı">
+      <button class="carbon-heart-trigger" id="carbon-heart-trigger" type="button" aria-label="Karbon kalp detayı">
         <span class="hold-ring" aria-hidden="true"></span>
-        <span class="carbon-heart" aria-hidden="true">♥</span>
+        <svg class="carbon-heart" viewBox="0 0 100 90" aria-hidden="true">
+          <defs>
+            <pattern id="cfPattern" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(0)">
+              <rect width="16" height="16" fill="#0a0b0d"></rect>
+              <path d="M-4 4 L4 -4 M0 16 L16 0 M12 20 L20 12"
+                    stroke="#343840" stroke-width="5.2" stroke-linecap="square"></path>
+              <path d="M-4 12 L12 -4 M4 20 L20 4"
+                    stroke="#15181d" stroke-width="5.2" stroke-linecap="square"></path>
+              <path d="M-3 3 L3 -3 M1 17 L17 1 M13 19 L19 13"
+                    stroke="rgba(255,255,255,.10)" stroke-width="1.05"></path>
+              <path d="M-3 11 L11 -3 M5 19 L19 5"
+                    stroke="rgba(255,255,255,.035)" stroke-width=".8"></path>
+            </pattern>
+            <linearGradient id="cfGloss" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="rgba(255,255,255,.42)"></stop>
+              <stop offset="25%" stop-color="rgba(255,255,255,.06)"></stop>
+              <stop offset="60%" stop-color="rgba(255,255,255,0)"></stop>
+              <stop offset="100%" stop-color="rgba(201,151,126,.08)"></stop>
+            </linearGradient>
+          </defs>
+          <path class="cf-depth" d="M50 82 C42 73 12 52 12 28 C12 11 31 5 43 18 L50 26 L57 18 C69 5 88 11 88 28 C88 52 58 73 50 82 Z"></path>
+          <path class="cf-body" d="M50 80 C42 71 14 51 14 29 C14 13 31 8 43 20 L50 28 L57 20 C69 8 86 13 86 29 C86 51 58 71 50 80 Z"></path>
+          <path class="cf-gloss" d="M50 80 C42 71 14 51 14 29 C14 13 31 8 43 20 L50 28 L57 20 C69 8 86 13 86 29 C86 51 58 71 50 80 Z"></path>
+          <path class="cf-edge" d="M50 80 C42 71 14 51 14 29 C14 13 31 8 43 20 L50 28 L57 20 C69 8 86 13 86 29 C86 51 58 71 50 80 Z"></path>
+          <path class="cf-fiber-highlight" d="M25 20 C34 13 41 18 49 29"></path>
+        </svg>
       </button>
 
       <div class="angel-reveal hidden" id="angel-reveal" aria-hidden="true">
