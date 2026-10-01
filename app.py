@@ -10,7 +10,7 @@ from pathlib import Path
 
 app = Flask(__name__)
 
-app.secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
+secret_seed = (\n    os.environ.get("SECRET_KEY")\n    or os.environ.get("SITE_PASSWORD")\n    or os.environ.get("ACCESS_PASSWORD")\n    or secrets.token_hex(32)\n)\napp.secret_key = hashlib.sha256(secret_seed.encode("utf-8")).digest()
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
