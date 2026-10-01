@@ -1,413 +1,1093 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>فرشته</title>
-   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@200;300&display=swap" rel="stylesheet">
-   <style>
-       * { margin: 0; padding: 0; box-sizing: border-box; }
-       :root {
-           --gold: #c9a84c;
-           --gold-light: #e8c97a;
-           --cream: #f0ead6;
-           --rose: #c4a0b0;
-           --lavender: #b0a8c8;
-           --muted: #8a8499;
-           --glow: rgba(201, 168, 76, 0.12);
-       }
-       body {
-           font-family: 'Cormorant Garamond', serif;
-           min-height: 100vh;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           overflow-y: auto;
-           position: relative;
-           transition: background-color 8s ease, color 8s ease;
-       }
-       .side-decor { position: fixed; top: 0; bottom: 0; width: 120px; pointer-events: none; z-index: 1; overflow: hidden; }
-       .side-decor.left { left: 0; }
-       .side-decor.right { right: 0; }
-       .side-star { position: absolute; opacity: 0; animation: sideTwinkle var(--dur) ease-in-out infinite; font-size: var(--sz); transition: color 8s ease; }
-       @keyframes sideTwinkle { 0%, 100% { opacity: 0; transform: scale(0.8); } 50% { opacity: var(--op); transform: scale(1); } }
-       .farsi-bg { position: fixed; pointer-events: none; z-index: 0; font-family: 'Cormorant Garamond', serif; direction: rtl; user-select: none; transition: color 8s ease; }
-       .farsi-bg.top-left { top: -2rem; left: -1rem; font-size: 12rem; }
-       .farsi-bg.bottom-right { bottom: -2rem; right: -1rem; font-size: 12rem; }
-       .corner-glow { position: fixed; width: 300px; height: 300px; border-radius: 50%; pointer-events: none; z-index: 0; transition: background 8s ease; }
-       .corner-glow.tl { top: -100px; left: -100px; }
-       .corner-glow.br { bottom: -100px; right: -100px; }
-       .corner-glow.tr { top: -100px; right: -100px; }
-       .corner-glow.bl { bottom: -100px; left: -100px; }
-       .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-       .star { position: absolute; border-radius: 50%; animation: twinkle var(--dur) ease-in-out infinite; opacity: 0; transition: background 8s ease; }
-       @keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: var(--op); } }
-       .gold-line { position: fixed; pointer-events: none; z-index: 1; transition: background 8s ease; }
-       .gold-line.left-line { left: 110px; top: 10%; bottom: 10%; width: 1px; }
-       .gold-line.right-line { right: 110px; top: 10%; bottom: 10%; width: 1px; }
-       #password-screen { position: relative; z-index: 10; text-align: center; padding: 2rem; animation: fadeIn 1.5s ease; }
-       .farsi-title { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 300; letter-spacing: 0.05em; margin-bottom: 0.5rem; direction: rtl; transition: color 8s ease, text-shadow 8s ease; }
-       .subtitle { font-size: clamp(0.8rem, 2.5vw, 1rem); font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 3rem; transition: color 8s ease; }
-       .divider { width: 60px; height: 1px; margin: 1.5rem auto; transition: background 8s ease; }
-       #password-input { background: transparent; border: none; border-bottom: 1px solid rgba(201,168,76,0.25); font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; text-align: center; padding: 0.8rem 1.5rem; width: 280px; outline: none; letter-spacing: 0.1em; transition: border-color 0.4s ease, color 8s ease; }
-       #password-input::placeholder { font-style: italic; font-size: 1rem; }
-       #password-input:focus { border-bottom-color: var(--gold); }
-       #enter-btn { display: block; margin: 2rem auto 0; background: transparent; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 200; letter-spacing: 0.4em; text-transform: uppercase; padding: 0.9rem 2.5rem; cursor: pointer; transition: all 8s ease; }
-       #error-msg { font-size: 0.85rem; font-style: italic; margin-top: 1rem; opacity: 0; transition: opacity 0.3s; font-family: 'Inter', sans-serif; font-weight: 200; color: rgba(196,160,176,0.6); }
-       #main-screen { display: none; position: relative; z-index: 10; text-align: center; padding: 2rem; max-width: 580px; width: 100%; margin: auto; }
-       .angel-container { position: relative; height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
-       .angel { font-size: 5rem; animation: angelFloat 4s ease-in-out infinite; opacity: 0; transition: filter 8s ease; }
-       @keyframes angelFloat { 0%, 100% { transform: translateY(0px) rotate(-2deg); } 50% { transform: translateY(-15px) rotate(2deg); } }
-       .angel-glow { position: absolute; width: 140px; height: 140px; border-radius: 50%; animation: glowPulse 4s ease-in-out infinite; transition: background 8s ease; }
-       @keyframes glowPulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.3); opacity: 1; } }
-       .farsi-header { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 300; direction: rtl; letter-spacing: 0.05em; margin-bottom: 0.3rem; opacity: 0; transition: color 8s ease, text-shadow 8s ease; }
-       .farsi-meaning { font-size: 0.85rem; font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0; margin-bottom: 2.5rem; transition: color 8s ease; }
-       .message-block { opacity: 0; margin: 1.5rem 0; }
-       .message-tr { font-size: clamp(1.1rem, 3vw, 1.35rem); font-weight: 300; line-height: 1.9; font-style: italic; transition: color 8s ease; }
-       .message-tr span { display: block; margin-top: 0.4rem; transition: color 8s ease; }
-       .message-fa { margin-top: 2rem; padding-top: 2rem; transition: border-color 8s ease; }
-       .message-fa-text { font-size: clamp(1.2rem, 4vw, 1.7rem); font-weight: 300; direction: rtl; line-height: 1.9; margin-bottom: 0.6rem; transition: color 8s ease; }
-       .message-fa-meaning { font-size: 0.78rem; font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.25em; transition: color 8s ease; }
-       .ai-message-block { opacity: 0; margin-top: 2.5rem; padding-top: 2rem; padding-bottom: 3rem; transition: border-color 8s ease; }
-       .ai-label { font-size: 0.68rem; font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.45em; text-transform: uppercase; margin-bottom: 1.4rem; transition: color 8s ease; }
-       .ai-tr { font-size: clamp(1rem, 2.5vw, 1.2rem); font-weight: 300; line-height: 1.9; font-style: italic; margin-bottom: 1.2rem; transition: color 8s ease; }
-       .ai-fa { font-size: clamp(1.1rem, 3vw, 1.5rem); direction: rtl; line-height: 1.9; margin-bottom: 0.5rem; transition: color 8s ease; }
-       .ai-anlam { font-size: 0.75rem; font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.18em; transition: color 8s ease; }
-       .loading-dots { display: inline-flex; gap: 6px; align-items: center; }
-       .loading-dots span { width: 3px; height: 3px; border-radius: 50%; animation: dotPulse 1.4s ease-in-out infinite; }
-       .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-       .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-       @keyframes dotPulse { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
-       @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-       .sparkle { position: fixed; pointer-events: none; z-index: 5; font-size: 0.7rem; animation: sparkleFly 2s ease forwards; opacity: 0; }
-       @keyframes sparkleFly { 0% { opacity: 0; transform: translateY(0) scale(0); } 30% { opacity: 1; transform: translateY(-20px) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(0.5); } }
-       .feather-decor { position: fixed; pointer-events: none; z-index: 1; font-size: 4rem; animation: featherFloat 8s ease-in-out infinite; transition: opacity 8s ease; }
-       .feather-decor.f1 { top: 15%; left: 3%; animation-delay: 0s; }
-       .feather-decor.f2 { top: 60%; right: 3%; animation-delay: 3s; }
-       .feather-decor.f3 { bottom: 15%; left: 5%; animation-delay: 5s; font-size: 3rem; }
-       @keyframes featherFloat { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
-   </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0f">
+  <title>فرشته</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0b0f;
+      --bg-soft: #15161a;
+      --panel: rgba(21, 22, 26, 0.72);
+      --rose: #c9977e;
+      --rose-light: #e7c3b1;
+      --ivory: #f3eee8;
+      --muted: #a89e98;
+      --line: rgba(201, 151, 126, 0.28);
+      --glow: rgba(201, 151, 126, 0.16);
+      --shadow: rgba(0, 0, 0, 0.48);
+      --radius: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background: var(--bg);
+      color-scheme: dark;
+    }
+
+    body {
+      min-height: 100svh;
+      overflow-x: hidden;
+      color: var(--ivory);
+      font-family: "Inter", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(201, 151, 126, 0.10), transparent 34rem),
+        linear-gradient(135deg, rgba(255,255,255,0.018) 25%, transparent 25%) 0 0 / 18px 18px,
+        linear-gradient(315deg, rgba(255,255,255,0.012) 25%, transparent 25%) 0 0 / 18px 18px,
+        linear-gradient(135deg, #0a0a0d, #121317 48%, #09090c);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(45deg,
+          rgba(255,255,255,0.010) 0 2px,
+          rgba(0,0,0,0.035) 2px 4px);
+      opacity: 0.52;
+      mix-blend-mode: soft-light;
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at center, transparent 35%, rgba(0,0,0,0.42) 100%);
+      z-index: 0;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.08;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+    }
+
+    .ambient {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(38px);
+      background: rgba(201, 151, 126, 0.08);
+      animation: breathe 8s ease-in-out infinite;
+    }
+
+    .glow.a {
+      width: 280px;
+      height: 280px;
+      left: -90px;
+      top: 8%;
+    }
+
+    .glow.b {
+      width: 340px;
+      height: 340px;
+      right: -130px;
+      bottom: 4%;
+      animation-delay: -4s;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(0.92); opacity: 0.55; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: var(--rose-light);
+      opacity: 0;
+      animation: twinkle var(--d, 5s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+      box-shadow: 0 0 9px rgba(231, 195, 177, 0.65);
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; transform: scale(0.65); }
+      50% { opacity: var(--o, .45); transform: scale(1.1); }
+    }
+
+    .shell {
+      position: relative;
+      z-index: 2;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+    }
+
+    .screen {
+      width: min(100%, 660px);
+      margin: auto;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .fade-up {
+      animation: fadeUp .8s cubic-bezier(.2,.75,.2,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.42em;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .login {
+      text-align: center;
+      padding: 28px 12px;
+    }
+
+    .seal-mark {
+      width: 78px;
+      height: 78px;
+      border: 1px solid rgba(201, 151, 126, 0.38);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 24px;
+      color: var(--rose-light);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 2.45rem;
+      box-shadow:
+        0 0 0 7px rgba(201, 151, 126, 0.035),
+        0 0 36px rgba(201, 151, 126, 0.12);
+      background: rgba(12, 12, 15, 0.54);
+    }
+
+    .login h1,
+    .scene h2,
+    .scene .farsi-large {
+      font-family: "Cormorant Garamond", serif;
+      font-weight: 400;
+    }
+
+    .login h1 {
+      font-size: clamp(3.4rem, 12vw, 5.7rem);
+      line-height: 0.92;
+      color: var(--rose-light);
+      direction: rtl;
+      text-shadow: 0 0 28px rgba(201, 151, 126, 0.12);
+    }
+
+    .login-subtitle {
+      margin: 15px auto 38px;
+      max-width: 340px;
+      color: var(--muted);
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      font-size: 1.16rem;
+      line-height: 1.55;
+    }
+
+    .login-form {
+      width: min(100%, 340px);
+      margin: auto;
+    }
+
+    .password-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    #password-input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(8, 8, 11, 0.58);
+      color: var(--ivory);
+      padding: 15px 20px;
+      text-align: center;
+      outline: none;
+      letter-spacing: 0.08em;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.015);
+      transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+    }
+
+    #password-input:focus {
+      border-color: rgba(231, 195, 177, 0.58);
+      background: rgba(14, 14, 18, 0.76);
+      box-shadow: 0 0 0 4px rgba(201, 151, 126, 0.07);
+    }
+
+    #password-input::placeholder {
+      color: rgba(168, 158, 152, 0.68);
+      letter-spacing: 0.02em;
+    }
+
+    .primary-btn,
+    .ghost-btn {
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease, opacity .2s ease;
+    }
+
+    .primary-btn {
+      width: 100%;
+      border: 1px solid rgba(201, 151, 126, 0.45);
+      background: linear-gradient(135deg, rgba(201,151,126,.20), rgba(201,151,126,.08));
+      color: var(--rose-light);
+      padding: 14px 22px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.24em;
+    }
+
+    .primary-btn:hover,
+    .ghost-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary-btn:active,
+    .ghost-btn:active {
+      transform: translateY(1px);
+    }
+
+    .primary-btn:disabled,
+    .ghost-btn:disabled {
+      cursor: wait;
+      opacity: 0.52;
+      transform: none;
+    }
+
+    .error {
+      min-height: 22px;
+      margin-top: 12px;
+      color: #d8a498;
+      font-size: 0.76rem;
+      line-height: 1.45;
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+
+    .error.show {
+      opacity: 1;
+    }
+
+    .experience {
+      padding: 12px 0 30px;
+    }
+
+    .stage-label {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-size: 0.64rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+    }
+
+    .envelope-stage {
+      min-height: 580px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 30px 0;
+    }
+
+    .envelope-wrap {
+      width: min(92vw, 420px);
+      perspective: 1200px;
+    }
+
+    .envelope {
+      position: relative;
+      aspect-ratio: 1.5 / 1;
+      border: 1px solid rgba(201,151,126,.30);
+      border-radius: 22px;
+      background:
+        linear-gradient(145deg, rgba(31,32,37,.95), rgba(13,13,17,.98));
+      box-shadow:
+        0 26px 75px rgba(0,0,0,.46),
+        inset 0 1px rgba(255,255,255,.035);
+      overflow: visible;
+      transition: transform .85s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .envelope::before,
+    .envelope::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 22px;
+      pointer-events: none;
+    }
+
+    .envelope::before {
+      clip-path: polygon(0 100%, 0 22%, 50% 68%, 100% 22%, 100% 100%);
+      background:
+        linear-gradient(145deg, rgba(37,38,43,.94), rgba(17,18,22,.98));
+      border-bottom: 1px solid rgba(201,151,126,.12);
+      z-index: 3;
+    }
+
+    .envelope::after {
+      background:
+        repeating-linear-gradient(45deg,
+          rgba(255,255,255,.012) 0 3px,
+          rgba(0,0,0,.04) 3px 6px);
+      opacity: .7;
+      z-index: 6;
+      mix-blend-mode: soft-light;
+    }
+
+    .flap {
+      position: absolute;
+      inset: -1px -1px auto;
+      height: 65%;
+      transform-origin: top center;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      background: linear-gradient(180deg, #202126, #14151a);
+      border-top: 1px solid rgba(231,195,177,.22);
+      z-index: 5;
+      transition: transform 1s cubic-bezier(.2,.8,.2,1), opacity .5s ease;
+      backface-visibility: hidden;
+    }
+
+    .letter-preview {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 10%;
+      height: 76%;
+      border-radius: 15px;
+      background: linear-gradient(180deg, #f1e9e2, #d9ccc2);
+      color: #2d2927;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      z-index: 2;
+      transform: translateY(30%);
+      transition: transform 1s .16s cubic-bezier(.2,.8,.2,1);
+      box-shadow: 0 12px 25px rgba(0,0,0,.28);
+    }
+
+    .letter-preview .mini-farsi {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 2rem;
+      direction: rtl;
+      color: #8f5f50;
+      margin-bottom: 6px;
+    }
+
+    .letter-preview .mini-line {
+      width: 52px;
+      height: 1px;
+      background: rgba(143,95,80,.36);
+      margin: 12px auto;
+    }
+
+    .letter-preview p {
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      font-size: 1.02rem;
+      color: #6c5d56;
+    }
+
+    .wax {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      width: 70px;
+      height: 70px;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      z-index: 7;
+      color: #2b1713;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 2rem;
+      background:
+        radial-gradient(circle at 35% 30%, #efc4ae, #b77962 48%, #7b4939 100%);
+      border: 1px solid rgba(255,231,218,.25);
+      box-shadow:
+        0 9px 18px rgba(0,0,0,.38),
+        inset 0 1px 3px rgba(255,255,255,.35);
+      transition: opacity .35s ease, transform .5s ease;
+    }
+
+    .envelope.open .flap {
+      transform: rotateX(180deg);
+      opacity: .28;
+    }
+
+    .envelope.open .letter-preview {
+      transform: translateY(-18%);
+    }
+
+    .envelope.open .wax {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(.75);
+    }
+
+    .open-caption {
+      margin-top: 34px;
+      color: var(--muted);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.05rem;
+      font-style: italic;
+    }
+
+    .open-btn {
+      width: auto;
+      min-width: 210px;
+      margin-top: 18px;
+    }
+
+    .story {
+      width: min(100%, 620px);
+      margin: auto;
+    }
+
+    .scene {
+      position: relative;
+      min-height: 530px;
+      padding: 48px clamp(22px, 7vw, 52px);
+      border: 1px solid rgba(201,151,126,.20);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(23,24,29,.88), rgba(10,10,13,.78));
+      box-shadow:
+        0 26px 80px rgba(0,0,0,.34),
+        inset 0 1px rgba(255,255,255,.025);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .scene.active {
+      display: flex;
+      animation: sceneIn .72s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    @keyframes sceneIn {
+      from { opacity: 0; transform: translateY(15px) scale(.988); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .scene::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 15%, rgba(201,151,126,.08), transparent 38%),
+        repeating-linear-gradient(45deg,
+          rgba(255,255,255,.006) 0 3px,
+          rgba(0,0,0,.025) 3px 6px);
+      pointer-events: none;
+    }
+
+    .scene > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .scene-index {
+      color: rgba(201,151,126,.70);
+      font-size: .66rem;
+      letter-spacing: .30em;
+      margin-bottom: 26px;
+    }
+
+    .scene h2 {
+      color: var(--ivory);
+      font-size: clamp(2.1rem, 8vw, 3.65rem);
+      line-height: 1.05;
+      margin-bottom: 22px;
+    }
+
+    .scene .lead {
+      color: var(--rose-light);
+    }
+
+    .scene-copy {
+      color: #d9d0cb;
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.3rem, 4.8vw, 1.72rem);
+      line-height: 1.58;
+      font-style: italic;
+      max-width: 500px;
+    }
+
+    .farsi-large {
+      direction: rtl;
+      color: var(--rose-light);
+      font-size: clamp(2rem, 7vw, 3.2rem);
+      line-height: 1.55;
+      margin-bottom: 18px;
+    }
+
+    .meaning {
+      color: var(--muted);
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      font-size: 1.08rem;
+      line-height: 1.55;
+    }
+
+    .scene-actions {
+      margin-top: 38px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .ghost-btn {
+      border: 1px solid rgba(201,151,126,.30);
+      background: rgba(201,151,126,.045);
+      color: var(--rose-light);
+      padding: 12px 18px;
+      font-size: .72rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .ghost-btn .arrow {
+      display: inline-block;
+      margin-left: 8px;
+      transition: transform .2s ease;
+    }
+
+    .ghost-btn:hover .arrow {
+      transform: translateX(3px);
+    }
+
+    .ai-card {
+      margin-top: 10px;
+      padding: 24px;
+      border: 1px solid rgba(201,151,126,.18);
+      border-radius: 22px;
+      background: rgba(7,7,10,.36);
+      min-height: 215px;
+    }
+
+    .ai-label {
+      color: var(--rose);
+      font-size: .64rem;
+      text-transform: uppercase;
+      letter-spacing: .28em;
+      margin-bottom: 18px;
+    }
+
+    .ai-tr {
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      font-size: 1.28rem;
+      line-height: 1.55;
+      color: var(--ivory);
+      margin-bottom: 16px;
+    }
+
+    .ai-fa {
+      font-family: "Cormorant Garamond", serif;
+      direction: rtl;
+      font-size: 1.55rem;
+      line-height: 1.5;
+      color: var(--rose-light);
+      margin-bottom: 9px;
+    }
+
+    .ai-meaning {
+      color: var(--muted);
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .ai-status {
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.5;
+    }
+
+    .dots {
+      display: inline-flex;
+      gap: 7px;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+
+    .dots i {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--rose-light);
+      animation: dot 1.2s ease-in-out infinite;
+    }
+
+    .dots i:nth-child(2) { animation-delay: .15s; }
+    .dots i:nth-child(3) { animation-delay: .3s; }
+
+    @keyframes dot {
+      0%, 100% { opacity: .25; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-3px); }
+    }
+
+    .signature {
+      margin-top: 24px;
+      color: var(--rose-light);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.45rem;
+      font-style: italic;
+    }
+
+    .final-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(201,151,126,.32);
+      color: var(--rose-light);
+      margin-bottom: 24px;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.55rem;
+      box-shadow: 0 0 26px rgba(201,151,126,.08);
+    }
+
+    .progress {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .progress span {
+      width: 18px;
+      height: 2px;
+      border-radius: 99px;
+      background: rgba(168,158,152,.20);
+      transition: width .25s ease, background .25s ease;
+    }
+
+    .progress span.active {
+      width: 34px;
+      background: rgba(231,195,177,.68);
+    }
+
+    .footer-note {
+      text-align: center;
+      color: rgba(168,158,152,.52);
+      font-size: .64rem;
+      letter-spacing: .12em;
+      margin-top: 22px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        background:
+          radial-gradient(circle at 50% 12%, rgba(201,151,126,.10), transparent 24rem),
+          linear-gradient(135deg, #0a0a0d, #111216 48%, #09090c);
+      }
+
+      .shell {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .ambient .star:nth-child(n+23) {
+        display: none;
+      }
+
+      .login {
+        padding-inline: 4px;
+      }
+
+      .seal-mark {
+        width: 68px;
+        height: 68px;
+        font-size: 2.15rem;
+      }
+
+      .envelope-stage {
+        min-height: 520px;
+      }
+
+      .scene {
+        min-height: 520px;
+        border-radius: 24px;
+      }
+
+      .scene-actions {
+        margin-top: 30px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="corner-glow tl"></div>
-<div class="corner-glow br"></div>
-<div class="corner-glow tr"></div>
-<div class="corner-glow bl"></div>
-<div class="farsi-bg top-left" id="farsi-bg-tl">ف</div>
-<div class="farsi-bg bottom-right" id="farsi-bg-br">ه</div>
-<div class="gold-line left-line" id="line-l"></div>
-<div class="gold-line right-line" id="line-r"></div>
-<div class="feather-decor f1" id="feather1">🪶</div>
-<div class="feather-decor f2" id="feather2">🪶</div>
-<div class="feather-decor f3" id="feather3">🕊️</div>
-<div class="side-decor left" id="side-left"></div>
-<div class="side-decor right" id="side-right"></div>
-<div class="stars" id="stars"></div>
+  <div class="noise"></div>
+  <div class="ambient" id="ambient" aria-hidden="true">
+    <div class="glow a"></div>
+    <div class="glow b"></div>
+  </div>
 
-<div id="password-screen">
-   <div class="farsi-title" id="farsi-title">فرشته</div>
-   <div class="subtitle" id="subtitle">Bir şeyler seni bekliyor</div>
-   <div class="divider" id="divider-pw"></div>
-   <div class="password-container">
-       <input type="text" id="password-input" placeholder="şifreni gir..." autocomplete="off" autocorrect="off" spellcheck="false">
-   </div>
-   <button id="enter-btn">Gir</button>
-   <div id="error-msg">Yanlış şifre...</div>
-</div>
+  <main class="shell">
+    <section class="screen login fade-up" id="login-screen">
+      <div class="seal-mark">ف</div>
+      <div class="eyebrow">A small gift</div>
+      <h1>فرشته</h1>
+      <p class="login-subtitle">Senin için saklanan küçük bir şey var.</p>
 
-<div id="main-screen">
-   <div class="angel-container">
-       <div class="angel-glow" id="angel-glow"></div>
-       <div class="angel" id="angel">🕊️</div>
-   </div>
-   <div class="farsi-header" id="farsi-header">فرشته</div>
-   <div class="farsi-meaning" id="farsi-meaning">Fereshteh · Melek</div>
-   <div class="divider" id="divider1"></div>
-   <div class="message-block" id="msg1">
-       <div class="message-tr" id="msg1-tr">
-           Bazı insanlar hayatına girer, fark etmeden her şeyi değiştirir.
-           <span id="msg1-span">Sen de öylesin.</span>
-       </div>
-   </div>
-   <div class="message-block" id="msg2">
-       <div class="message-fa" id="msg2-fa">
-           <div class="message-fa-text" id="msg2-fa-text">فرشته‌ای که نمی‌دانست فرشته است</div>
-           <div class="message-fa-meaning" id="msg2-fa-meaning">melek olduğunu bilmeyen melek</div>
-       </div>
-   </div>
-   <div class="message-block" id="msg3">
-       <div class="message-tr" id="msg3-tr">Seninle geçen her an, farkında bile olmadan aklımda kalıyor.</div>
-   </div>
-   <div class="divider" id="divider2" style="opacity:0; margin: 2rem auto;"></div>
-   <div class="ai-message-block" id="ai-block">
-       <div class="ai-label" id="ai-label">✦ bu an için</div>
-       <div id="ai-content">
-           <div class="loading-dots"><span></span><span></span><span></span></div>
-       </div>
-   </div>
-</div>
+      <div class="login-form">
+        <div class="password-wrap">
+          <input
+            id="password-input"
+            type="password"
+            inputmode="text"
+            autocomplete="off"
+            autocapitalize="none"
+            spellcheck="false"
+            placeholder="şifreni gir..."
+            aria-label="Şifre"
+          >
+        </div>
+        <button class="primary-btn" id="enter-btn" type="button">Aç</button>
+        <p class="error" id="login-error" role="status" aria-live="polite"></p>
+      </div>
+    </section>
 
-<script>
-   const themes = [
-       {
-           name: 'gece',
-           bg: '#0a0a14', text: '#f0ead6', gold: '#c9a84c', goldLight: '#e8c97a',
-           muted: '#8a8499', rose: '#c4a0b0', lavender: '#b0a8c8',
-           farsi: 'rgba(201,168,76,0.03)',
-           line: 'linear-gradient(to bottom, transparent, rgba(201,168,76,0.15), transparent)',
-           divider: 'linear-gradient(90deg, transparent, #c9a84c, transparent)',
-           angelGlow: 'radial-gradient(circle, rgba(201,168,76,0.06) 0%, rgba(196,160,176,0.04) 50%, transparent 70%)',
-           featherOp: '0.04',
-           starColors: ['#c9a84c','#c4a0b0','#b0a8c8','#f0ead6','#e8c97a'],
-           btnBorder: 'rgba(201,168,76,0.3)', inputBorder: 'rgba(201,168,76,0.25)',
-       },
-       {
-           name: 'gün batımı',
-           bg: '#1a0f0a', text: '#faebd7', gold: '#e8a87c', goldLight: '#f5c9a0',
-           muted: '#a08070', rose: '#d4907a', lavender: '#c4a89a',
-           farsi: 'rgba(232,168,124,0.04)',
-           line: 'linear-gradient(to bottom, transparent, rgba(232,168,124,0.15), transparent)',
-           divider: 'linear-gradient(90deg, transparent, #e8a87c, transparent)',
-           angelGlow: 'radial-gradient(circle, rgba(232,168,124,0.08) 0%, rgba(212,144,122,0.04) 50%, transparent 70%)',
-           featherOp: '0.05',
-           starColors: ['#e8a87c','#d4907a','#f5c9a0','#faebd7','#c4a89a'],
-           btnBorder: 'rgba(232,168,124,0.3)', inputBorder: 'rgba(232,168,124,0.25)',
-       },
-       {
-           name: 'şafak',
-           bg: '#f5f0f8', text: '#3a2a4a', gold: '#9b7ab0', goldLight: '#b899c8',
-           muted: '#8a7a9a', rose: '#c4a0b8', lavender: '#9490b8',
-           farsi: 'rgba(155,122,176,0.05)',
-           line: 'linear-gradient(to bottom, transparent, rgba(155,122,176,0.2), transparent)',
-           divider: 'linear-gradient(90deg, transparent, #9b7ab0, transparent)',
-           angelGlow: 'radial-gradient(circle, rgba(155,122,176,0.08) 0%, rgba(196,160,184,0.05) 50%, transparent 70%)',
-           featherOp: '0.08',
-           starColors: ['#9b7ab0','#c4a0b8','#9490b8','#3a2a4a','#b899c8'],
-           btnBorder: 'rgba(155,122,176,0.4)', inputBorder: 'rgba(155,122,176,0.3)',
-       },
-       {
-           name: 'gece yarısı',
-           bg: '#080814', text: '#e8e0f0', gold: '#9090d0', goldLight: '#b0b0e8',
-           muted: '#6a6890', rose: '#9880b8', lavender: '#8090c8',
-           farsi: 'rgba(144,144,208,0.03)',
-           line: 'linear-gradient(to bottom, transparent, rgba(144,144,208,0.15), transparent)',
-           divider: 'linear-gradient(90deg, transparent, #9090d0, transparent)',
-           angelGlow: 'radial-gradient(circle, rgba(144,144,208,0.07) 0%, rgba(152,128,184,0.04) 50%, transparent 70%)',
-           featherOp: '0.04',
-           starColors: ['#9090d0','#9880b8','#8090c8','#e8e0f0','#b0b0e8'],
-           btnBorder: 'rgba(144,144,208,0.3)', inputBorder: 'rgba(144,144,208,0.25)',
-       },
-       {
-           name: 'sabah',
-           bg: '#f8f4ee', text: '#3a2e20', gold: '#b8943c', goldLight: '#d4aa58',
-           muted: '#9a8870', rose: '#c49878', lavender: '#a89878',
-           farsi: 'rgba(184,148,60,0.04)',
-           line: 'linear-gradient(to bottom, transparent, rgba(184,148,60,0.18), transparent)',
-           divider: 'linear-gradient(90deg, transparent, #b8943c, transparent)',
-           angelGlow: 'radial-gradient(circle, rgba(184,148,60,0.07) 0%, rgba(196,152,120,0.04) 50%, transparent 70%)',
-           featherOp: '0.07',
-           starColors: ['#b8943c','#c49878','#a89878','#3a2e20','#d4aa58'],
-           btnBorder: 'rgba(184,148,60,0.3)', inputBorder: 'rgba(184,148,60,0.25)',
-       }
-   ];
+    <section class="screen experience hidden" id="experience">
+      <div class="stage-label">for Tannaz · برای تو</div>
 
-   let currentTheme = 0;
+      <div class="envelope-stage" id="envelope-stage">
+        <div>
+          <div class="envelope-wrap">
+            <div class="envelope" id="envelope">
+              <div class="letter-preview">
+                <div>
+                  <div class="mini-farsi">فرشته</div>
+                  <div class="mini-line"></div>
+                  <p>küçük bir şey, sadece senin için</p>
+                </div>
+              </div>
+              <div class="flap"></div>
+              <div class="wax">ف</div>
+            </div>
+          </div>
+          <p class="open-caption">Bazen en küçük şeylerin içinde en çok emek saklıdır.</p>
+          <button class="primary-btn open-btn" id="open-letter-btn" type="button">Mektubu aç</button>
+        </div>
+      </div>
 
-   function applyTheme(t) {
-       document.body.style.backgroundColor = t.bg;
-       document.body.style.color = t.text;
-       const setColor = (id, color) => { const el = document.getElementById(id); if(el) el.style.color = color; };
-       const setStyle = (id, prop, val) => { const el = document.getElementById(id); if(el) el.style[prop] = val; };
-       setColor('farsi-title', t.gold);
-       setColor('subtitle', t.muted);
-       setColor('farsi-header', t.gold);
-       setColor('farsi-meaning', t.muted);
-       setColor('msg1-tr', t.text);
-       setColor('msg1-span', t.text);
-       setColor('msg2-fa-text', t.goldLight);
-       setColor('msg2-fa-meaning', t.rose);
-       setColor('msg3-tr', t.text);
-       setColor('ai-label', t.rose);
-       document.querySelectorAll('.ai-tr').forEach(el => el.style.color = t.text);
-       document.querySelectorAll('.ai-fa').forEach(el => el.style.color = t.goldLight);
-       document.querySelectorAll('.ai-anlam').forEach(el => el.style.color = t.lavender);
-       const input = document.getElementById('password-input');
-       if(input) { input.style.color = t.text; input.style.borderBottomColor = t.inputBorder; }
-       const btn = document.getElementById('enter-btn');
-       if(btn) { btn.style.color = t.gold; btn.style.borderColor = t.btnBorder; btn.style.border = `1px solid ${t.btnBorder}`; }
-       document.querySelectorAll('.divider').forEach(el => el.style.background = t.divider);
-       setStyle('line-l', 'background', t.line);
-       setStyle('line-r', 'background', t.line);
-       setStyle('angel-glow', 'background', t.angelGlow);
-       const angel = document.getElementById('angel');
-       if(angel) angel.style.filter = `drop-shadow(0 0 20px ${t.gold}44) drop-shadow(0 0 40px ${t.rose}22)`;
-       setStyle('farsi-bg-tl', 'color', t.farsi);
-       setStyle('farsi-bg-br', 'color', t.farsi);
-       ['feather1','feather2','feather3'].forEach(id => { const el = document.getElementById(id); if(el) el.style.opacity = t.featherOp; });
-       document.querySelectorAll('.loading-dots span').forEach(el => el.style.background = t.gold);
-       document.querySelectorAll('.star').forEach(el => { el.style.background = t.starColors[Math.floor(Math.random() * t.starColors.length)]; });
-       document.querySelectorAll('.side-star').forEach(el => { el.style.color = t.starColors[Math.floor(Math.random() * t.starColors.length)]; });
-       const mfa = document.getElementById('msg2-fa');
-       if(mfa) mfa.style.borderTopColor = t.gold + '22';
-       const aiBlock = document.getElementById('ai-block');
-       if(aiBlock) aiBlock.style.borderTopColor = t.gold + '15';
-   }
+      <div class="story hidden" id="story">
+        <article class="scene active" data-scene="0">
+          <div class="scene-index">01 · FOR YOU</div>
+          <h2><span class="lead">Melek olduğunu</span><br>bilmeyen meleğe.</h2>
+          <p class="scene-copy">Bu sayfa büyük bir şey söylemek için değil. Bir gün açıp yüzünde küçücük bir gülümseme bırakabilsin diye var.</p>
+          <div class="scene-actions">
+            <button class="ghost-btn next-btn" type="button">devam <span class="arrow">→</span></button>
+          </div>
+        </article>
 
-   applyTheme(themes[0]);
-   setInterval(() => {
-       currentTheme = (currentTheme + 1) % themes.length;
-       applyTheme(themes[currentTheme]);
-   }, 20000);
+        <article class="scene" data-scene="1">
+          <div class="scene-index">02 · A LITTLE THOUGHT</div>
+          <h2>Bazı insanlar<br><span class="lead">fark etmeden iz bırakır.</span></h2>
+          <p class="scene-copy">Seninle geçen bazı anların neden aklımda kaldığını açıklamaya çalışmadım. Güzel olmaları yeterliydi.</p>
+          <div class="scene-actions">
+            <button class="ghost-btn next-btn" type="button">devam <span class="arrow">→</span></button>
+          </div>
+        </article>
 
-   const starsContainer = document.getElementById('stars');
-   for (let i = 0; i < 100; i++) {
-       const star = document.createElement('div');
-       star.className = 'star';
-       star.style.left = Math.random() * 100 + '%';
-       star.style.top = Math.random() * 100 + '%';
-       star.style.setProperty('--dur', (2 + Math.random() * 5) + 's');
-       star.style.setProperty('--op', (0.15 + Math.random() * 0.5).toString());
-       star.style.animationDelay = Math.random() * 5 + 's';
-       const size = 1 + Math.random() * 1.5;
-       star.style.width = size + 'px';
-       star.style.height = size + 'px';
-       star.style.background = themes[0].starColors[Math.floor(Math.random() * themes[0].starColors.length)];
-       starsContainer.appendChild(star);
-   }
+        <article class="scene" data-scene="2">
+          <div class="scene-index">03 · فارسی</div>
+          <div class="farsi-large">فرشته‌ای که نمی‌دانست فرشته است</div>
+          <p class="meaning">Melek olduğunu bilmeyen melek.</p>
+          <div class="scene-actions">
+            <button class="ghost-btn next-btn" type="button">devam <span class="arrow">→</span></button>
+          </div>
+        </article>
 
-   function createSideStars(containerId) {
-       const container = document.getElementById(containerId);
-       const symbols = ['✦', '✧', '⋆', '˚', '·', '✵', '✴'];
-       for (let i = 0; i < 18; i++) {
-           const star = document.createElement('div');
-           star.className = 'side-star';
-           star.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-           star.style.left = (Math.random() * 80) + '%';
-           star.style.top = (Math.random() * 100) + '%';
-           star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
-           star.style.setProperty('--op', (0.2 + Math.random() * 0.5).toString());
-           star.style.setProperty('--sz', (0.5 + Math.random() * 0.7) + 'rem');
-           star.style.animationDelay = Math.random() * 4 + 's';
-           star.style.color = themes[0].starColors[Math.floor(Math.random() * themes[0].starColors.length)];
-           container.appendChild(star);
-       }
-   }
-   createSideStars('side-left');
-   createSideStars('side-right');
+        <article class="scene" data-scene="3">
+          <div class="scene-index">04 · WHY THIS EXISTS</div>
+          <h2>Bir kutuya sığmayan<br><span class="lead">küçük bir parça.</span></h2>
+          <p class="scene-copy">Bunu senden bir şey beklediğim için hazırlamadım. Bir gün açıp, “bunu gerçekten benim için yapmış” diye düşünürsen yeter.</p>
+          <div class="scene-actions">
+            <button class="ghost-btn next-btn" type="button">son bir şey <span class="arrow">→</span></button>
+          </div>
+        </article>
 
-   function createSparkle(x, y) {
-       const t = themes[currentTheme];
-       const sparkles = ['✦', '✧', '·', '⋆', '˚', '✵'];
-       for (let i = 0; i < 4; i++) {
-           setTimeout(() => {
-               const s = document.createElement('div');
-               s.className = 'sparkle';
-               s.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
-               s.style.left = (x + (Math.random() - 0.5) * 60) + 'px';
-               s.style.top = (y + (Math.random() - 0.5) * 60) + 'px';
-               s.style.color = t.starColors[Math.floor(Math.random() * t.starColors.length)];
-               document.body.appendChild(s);
-               setTimeout(() => s.remove(), 2000);
-           }, i * 150);
-       }
-   }
+        <article class="scene" data-scene="4">
+          <div class="scene-index">05 · JUST FOR THIS MOMENT</div>
+          <h2><span class="lead">Yalnızca bu an için.</span></h2>
+          <div class="ai-card" id="ai-card" aria-live="polite">
+            <div class="ai-label">✦ bu an için</div>
+            <div id="ai-content">
+              <p class="ai-status">Küçük bir not hazırlanıyor <span class="dots"><i></i><i></i><i></i></span></p>
+            </div>
+          </div>
+          <div class="scene-actions">
+            <button class="ghost-btn" id="new-note-btn" type="button">başka bir not ✦</button>
+            <button class="ghost-btn next-btn" type="button">bitir <span class="arrow">→</span></button>
+          </div>
+        </article>
 
-   document.addEventListener('click', (e) => {
-       if (document.getElementById('main-screen').style.display === 'block') createSparkle(e.clientX, e.clientY);
-   });
+        <article class="scene" data-scene="5">
+          <div class="final-mark">ف</div>
+          <div class="scene-index">06 · THAT'S ALL</div>
+          <h2>Hepsi bu.</h2>
+          <p class="scene-copy">Sadece küçük bir sürpriz. Umarım açtığın anda, bir saniyeliğine bile olsa, yüzünü güldürmüştür.</p>
+          <div class="signature">— Amir</div>
+        </article>
 
-   async function checkPassword() {
-       const input = document.getElementById('password-input').value.trim();
-       try {
-           const res = await fetch('/verify', {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({ password: input })
-           });
-           const data = await res.json();
-           if (data.success) {
-               showMainScreen();
-           } else {
-               const errMsg = document.getElementById('error-msg');
-               errMsg.style.opacity = '1';
-               setTimeout(() => { errMsg.style.opacity = '0'; }, 2000);
-           }
-       } catch(e) { console.error(e); }
-   }
+        <div class="progress" id="progress" aria-hidden="true"></div>
+        <div class="footer-note">BLACK HEART · ROSE ANGEL · LITTLE SURPRISE</div>
+      </div>
+    </section>
+  </main>
 
-   document.getElementById('enter-btn').addEventListener('click', checkPassword);
-   document.getElementById('password-input').addEventListener('keypress', (e) => {
-       if (e.key === 'Enter') checkPassword();
-   });
+  <script>
+    const loginScreen = document.getElementById("login-screen");
+    const experience = document.getElementById("experience");
+    const enterBtn = document.getElementById("enter-btn");
+    const passwordInput = document.getElementById("password-input");
+    const loginError = document.getElementById("login-error");
+    const envelope = document.getElementById("envelope");
+    const envelopeStage = document.getElementById("envelope-stage");
+    const openLetterBtn = document.getElementById("open-letter-btn");
+    const story = document.getElementById("story");
+    const scenes = Array.from(document.querySelectorAll(".scene"));
+    const progress = document.getElementById("progress");
+    const newNoteBtn = document.getElementById("new-note-btn");
+    const aiContent = document.getElementById("ai-content");
+    let currentScene = 0;
+    let messageLoading = false;
 
-   function showMainScreen() {
-       const pw = document.getElementById('password-screen');
-       pw.style.transition = 'opacity 1s ease';
-       pw.style.opacity = '0';
-       setTimeout(() => {
-           pw.style.display = 'none';
-           const main = document.getElementById('main-screen');
-           main.style.display = 'block';
-           runSequence();
-       }, 1000);
-   }
+    function createAmbientStars() {
+      const ambient = document.getElementById("ambient");
+      for (let i = 0; i < 36; i += 1) {
+        const star = document.createElement("span");
+        star.className = "star";
+        star.style.left = Math.random() * 100 + "%";
+        star.style.top = Math.random() * 100 + "%";
+        star.style.setProperty("--d", 3 + Math.random() * 5 + "s");
+        star.style.setProperty("--delay", -Math.random() * 7 + "s");
+        star.style.setProperty("--o", 0.16 + Math.random() * 0.40);
+        ambient.appendChild(star);
+      }
+    }
 
-   function animateEl(el, delay, duration = 1200) {
-       return new Promise(resolve => {
-           setTimeout(() => {
-               el.style.transition = `opacity ${duration}ms ease, transform ${duration}ms ease`;
-               el.style.transform = 'translateY(20px)';
-               el.style.opacity = '0';
-               requestAnimationFrame(() => {
-                   setTimeout(() => {
-                       el.style.transform = 'translateY(0)';
-                       el.style.opacity = '1';
-                       setTimeout(resolve, duration);
-                   }, 50);
-               });
-           }, delay);
-       });
-   }
+    function showError(message) {
+      loginError.textContent = message;
+      loginError.classList.add("show");
+    }
 
-   async function runSequence() {
-       const angel = document.getElementById('angel');
-       setTimeout(() => { angel.style.transition = 'opacity 2s ease'; angel.style.opacity = '1'; }, 300);
-       await animateEl(document.getElementById('farsi-header'), 800);
-       await animateEl(document.getElementById('farsi-meaning'), 200);
-       await animateEl(document.getElementById('msg1'), 600);
-       await animateEl(document.getElementById('msg2'), 800);
-       await animateEl(document.getElementById('msg3'), 800);
-       setTimeout(() => { document.getElementById('divider2').style.transition = 'opacity 1s ease'; document.getElementById('divider2').style.opacity = '1'; }, 500);
-       await animateEl(document.getElementById('ai-block'), 800);
-       fetchAIMessage();
-   }
+    async function verifyPassword() {
+      const password = passwordInput.value.trim();
+      if (!password) {
+        showError("Önce şifreyi yazmalısın.");
+        return;
+      }
 
-   async function fetchAIMessage() {
-       try {
-           const res = await fetch('/get_message?t=' + Date.now());
-           const data = await res.json();
-           if (data.success) {
-               const content = document.getElementById('ai-content');
-               content.style.transition = 'opacity 0.5s ease';
-               content.style.opacity = '0';
-               const t = themes[currentTheme];
-               setTimeout(() => {
-                   content.innerHTML = `
-                       <div class="ai-tr" style="color:${t.text}">${data.tr}</div>
-                       <div class="ai-fa" style="color:${t.goldLight}">${data.fa}</div>
-                       <div class="ai-anlam" style="color:${t.lavender}">${data.anlam}</div>
-                   `;
-                   content.style.opacity = '1';
-               }, 500);
-           }
-       } catch(e) {
-           document.getElementById('ai-content').innerHTML = `
-               <div class="ai-tr">Her bakışında farklı bir dünya görüyorum.</div>
-               <div class="ai-fa">تو آرامشی هستی که انتظارش را نداشتم</div>
-               <div class="ai-anlam">sen beklenmediğim bir huzursun</div>
-           `;
-       }
-   }
-</script>
+      enterBtn.disabled = true;
+      loginError.classList.remove("show");
+
+      try {
+        const response = await fetch("/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          showError(data.error || "Şifre doğru değil.");
+          enterBtn.disabled = false;
+          return;
+        }
+
+        loginScreen.style.opacity = "0";
+        loginScreen.style.transform = "translateY(-8px)";
+        loginScreen.style.transition = "opacity .55s ease, transform .55s ease";
+
+        window.setTimeout(function () {
+          loginScreen.classList.add("hidden");
+          experience.classList.remove("hidden");
+          experience.classList.add("fade-up");
+        }, 500);
+      } catch (error) {
+        showError("Şu anda bağlantı kurulamadı. Biraz sonra tekrar dene.");
+        enterBtn.disabled = false;
+      }
+    }
+
+    enterBtn.addEventListener("click", verifyPassword);
+    passwordInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        verifyPassword();
+      }
+    });
+
+    function buildProgress() {
+      scenes.forEach(function (_, index) {
+        const item = document.createElement("span");
+        if (index === currentScene) item.classList.add("active");
+        progress.appendChild(item);
+      });
+    }
+
+    function updateProgress() {
+      Array.from(progress.children).forEach(function (item, index) {
+        item.classList.toggle("active", index === currentScene);
+      });
+    }
+
+    function goToScene(index) {
+      if (index < 0 || index >= scenes.length) return;
+
+      scenes[currentScene].classList.remove("active");
+      currentScene = index;
+      scenes[currentScene].classList.add("active");
+      updateProgress();
+
+      if (currentScene === 4 && !aiContent.dataset.loaded) {
+        fetchMessage();
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.querySelectorAll(".next-btn").forEach(function (button) {
+      button.addEventListener("click", function () {
+        goToScene(currentScene + 1);
+      });
+    });
+
+    openLetterBtn.addEventListener("click", function () {
+      envelope.classList.add("open");
+      openLetterBtn.disabled = true;
+      openLetterBtn.textContent = "açılıyor...";
+
+      window.setTimeout(function () {
+        envelopeStage.style.opacity = "0";
+        envelopeStage.style.transform = "translateY(-10px)";
+        envelopeStage.style.transition = "opacity .55s ease, transform .55s ease";
+
+        window.setTimeout(function () {
+          envelopeStage.classList.add("hidden");
+          story.classList.remove("hidden");
+          story.classList.add("fade-up");
+        }, 520);
+      }, 850);
+    });
+
+    function clearElement(element) {
+      while (element.firstChild) element.removeChild(element.firstChild);
+    }
+
+    function addTextBlock(className, text) {
+      const element = document.createElement("div");
+      element.className = className;
+      element.textContent = text;
+      aiContent.appendChild(element);
+    }
+
+    function setAiStatus(text) {
+      clearElement(aiContent);
+      const status = document.createElement("p");
+      status.className = "ai-status";
+      status.textContent = text;
+      aiContent.appendChild(status);
+    }
+
+    async function fetchMessage() {
+      if (messageLoading) return;
+
+      messageLoading = true;
+      newNoteBtn.disabled = true;
+      setAiStatus("Küçük bir not hazırlanıyor…");
+
+      try {
+        const response = await fetch("/get_message", {
+          method: "GET",
+          headers: { "Accept": "application/json" },
+          cache: "no-store"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          if (response.status === 429 && data.retry_after) {
+            setAiStatus("Yeni not için " + data.retry_after + " saniye bekle ✦");
+          } else {
+            setAiStatus(data.error || "Not şu anda hazırlanamadı.");
+          }
+          return;
+        }
+
+        clearElement(aiContent);
+        addTextBlock("ai-tr", data.tr);
+        addTextBlock("ai-fa", data.fa);
+        addTextBlock("ai-meaning", data.anlam);
+        aiContent.dataset.loaded = "true";
+      } catch (error) {
+        setAiStatus("Not şu anda hazırlanamadı. Biraz sonra tekrar deneyebilirsin.");
+      } finally {
+        messageLoading = false;
+        newNoteBtn.disabled = false;
+      }
+    }
+
+    newNoteBtn.addEventListener("click", fetchMessage);
+
+    createAmbientStars();
+    buildProgress();
+  </script>
 </body>
 </html>
