@@ -1,413 +1,1096 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>فرشته</title>
-   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@200;300&display=swap" rel="stylesheet">
-   <style>
-       * { margin: 0; padding: 0; box-sizing: border-box; }
-       :root {
-           --gold: #c9a84c;
-           --gold-light: #e8c97a;
-           --cream: #f0ead6;
-           --rose: #c4a0b0;
-           --lavender: #b0a8c8;
-           --muted: #8a8499;
-           --glow: rgba(201, 168, 76, 0.12);
-       }
-       body {
-           font-family: 'Cormorant Garamond', serif;
-           min-height: 100vh;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           overflow-y: auto;
-           position: relative;
-           transition: background-color 8s ease, color 8s ease;
-       }
-       .side-decor { position: fixed; top: 0; bottom: 0; width: 120px; pointer-events: none; z-index: 1; overflow: hidden; }
-       .side-decor.left { left: 0; }
-       .side-decor.right { right: 0; }
-       .side-star { position: absolute; opacity: 0; animation: sideTwinkle var(--dur) ease-in-out infinite; font-size: var(--sz); transition: color 8s ease; }
-       @keyframes sideTwinkle { 0%, 100% { opacity: 0; transform: scale(0.8); } 50% { opacity: var(--op); transform: scale(1); } }
-       .farsi-bg { position: fixed; pointer-events: none; z-index: 0; font-family: 'Cormorant Garamond', serif; direction: rtl; user-select: none; transition: color 8s ease; }
-       .farsi-bg.top-left { top: -2rem; left: -1rem; font-size: 12rem; }
-       .farsi-bg.bottom-right { bottom: -2rem; right: -1rem; font-size: 12rem; }
-       .corner-glow { position: fixed; width: 300px; height: 300px; border-radius: 50%; pointer-events: none; z-index: 0; transition: background 8s ease; }
-       .corner-glow.tl { top: -100px; left: -100px; }
-       .corner-glow.br { bottom: -100px; right: -100px; }
-       .corner-glow.tr { top: -100px; right: -100px; }
-       .corner-glow.bl { bottom: -100px; left: -100px; }
-       .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-       .star { position: absolute; border-radius: 50%; animation: twinkle var(--dur) ease-in-out infinite; opacity: 0; transition: background 8s ease; }
-       @keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: var(--op); } }
-       .gold-line { position: fixed; pointer-events: none; z-index: 1; transition: background 8s ease; }
-       .gold-line.left-line { left: 110px; top: 10%; bottom: 10%; width: 1px; }
-       .gold-line.right-line { right: 110px; top: 10%; bottom: 10%; width: 1px; }
-       #password-screen { position: relative; z-index: 10; text-align: center; padding: 2rem; animation: fadeIn 1.5s ease; }
-       .farsi-title { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 300; letter-spacing: 0.05em; margin-bottom: 0.5rem; direction: rtl; transition: color 8s ease, text-shadow 8s ease; }
-       .subtitle { font-size: clamp(0.8rem, 2.5vw, 1rem); font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 3rem; transition: color 8s ease; }
-       .divider { width: 60px; height: 1px; margin: 1.5rem auto; transition: background 8s ease; }
-       #password-input { background: transparent; border: none; border-bottom: 1px solid rgba(201,168,76,0.25); font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; text-align: center; padding: 0.8rem 1.5rem; width: 280px; outline: none; letter-spacing: 0.1em; transition: border-color 0.4s ease, color 8s ease; }
-       #password-input::placeholder { font-style: italic; font-size: 1rem; }
-       #password-input:focus { border-bottom-color: var(--gold); }
-       #enter-btn { display: block; margin: 2rem auto 0; background: transparent; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 200; letter-spacing: 0.4em; text-transform: uppercase; padding: 0.9rem 2.5rem; cursor: pointer; transition: all 8s ease; }
-       #error-msg { font-size: 0.85rem; font-style: italic; margin-top: 1rem; opacity: 0; transition: opacity 0.3s; font-family: 'Inter', sans-serif; font-weight: 200; color: rgba(196,160,176,0.6); }
-       #main-screen { display: none; position: relative; z-index: 10; text-align: center; padding: 2rem; max-width: 580px; width: 100%; margin: auto; }
-       .angel-container { position: relative; height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
-       .angel { font-size: 5rem; animation: angelFloat 4s ease-in-out infinite; opacity: 0; transition: filter 8s ease; }
-       @keyframes angelFloat { 0%, 100% { transform: translateY(0px) rotate(-2deg); } 50% { transform: translateY(-15px) rotate(2deg); } }
-       .angel-glow { position: absolute; width: 140px; height: 140px; border-radius: 50%; animation: glowPulse 4s ease-in-out infinite; transition: background 8s ease; }
-       @keyframes glowPulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.3); opacity: 1; } }
-       .farsi-header { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 300; direction: rtl; letter-spacing: 0.05em; margin-bottom: 0.3rem; opacity: 0; transition: color 8s ease, text-shadow 8s ease; }
-       .farsi-meaning { font-size: 0.85rem; font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0; margin-bottom: 2.5rem; transition: color 8s ease; }
-       .message-block { opacity: 0; margin: 1.5rem 0; }
-       .message-tr { font-size: clamp(1.1rem, 3vw, 1.35rem); font-weight: 300; line-height: 1.9; font-style: italic; transition: color 8s ease; }
-       .message-tr span { display: block; margin-top: 0.4rem; transition: color 8s ease; }
-       .message-fa { margin-top: 2rem; padding-top: 2rem; transition: border-color 8s ease; }
-       .message-fa-text { font-size: clamp(1.2rem, 4vw, 1.7rem); font-weight: 300; direction: rtl; line-height: 1.9; margin-bottom: 0.6rem; transition: color 8s ease; }
-       .message-fa-meaning { font-size: 0.78rem; font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.25em; transition: color 8s ease; }
-       .ai-message-block { opacity: 0; margin-top: 2.5rem; padding-top: 2rem; padding-bottom: 3rem; transition: border-color 8s ease; }
-       .ai-label { font-size: 0.68rem; font-family: 'Inter', sans-serif; font-weight: 200; letter-spacing: 0.45em; text-transform: uppercase; margin-bottom: 1.4rem; transition: color 8s ease; }
-       .ai-tr { font-size: clamp(1rem, 2.5vw, 1.2rem); font-weight: 300; line-height: 1.9; font-style: italic; margin-bottom: 1.2rem; transition: color 8s ease; }
-       .ai-fa { font-size: clamp(1.1rem, 3vw, 1.5rem); direction: rtl; line-height: 1.9; margin-bottom: 0.5rem; transition: color 8s ease; }
-       .ai-anlam { font-size: 0.75rem; font-family: 'Inter', sans-serif; font-weight: 200; font-style: italic; letter-spacing: 0.18em; transition: color 8s ease; }
-       .loading-dots { display: inline-flex; gap: 6px; align-items: center; }
-       .loading-dots span { width: 3px; height: 3px; border-radius: 50%; animation: dotPulse 1.4s ease-in-out infinite; }
-       .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-       .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-       @keyframes dotPulse { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
-       @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-       .sparkle { position: fixed; pointer-events: none; z-index: 5; font-size: 0.7rem; animation: sparkleFly 2s ease forwards; opacity: 0; }
-       @keyframes sparkleFly { 0% { opacity: 0; transform: translateY(0) scale(0); } 30% { opacity: 1; transform: translateY(-20px) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(0.5); } }
-       .feather-decor { position: fixed; pointer-events: none; z-index: 1; font-size: 4rem; animation: featherFloat 8s ease-in-out infinite; transition: opacity 8s ease; }
-       .feather-decor.f1 { top: 15%; left: 3%; animation-delay: 0s; }
-       .feather-decor.f2 { top: 60%; right: 3%; animation-delay: 3s; }
-       .feather-decor.f3 { bottom: 15%; left: 5%; animation-delay: 5s; font-size: 3rem; }
-       @keyframes featherFloat { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
-   </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0f">
+  <meta name="color-scheme" content="dark">
+  <title>فرشته</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@200;300;400&family=Vazirmatn:wght@200;300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0b0b0f;
+      --ink-2: #121217;
+      --ink-3: #19191f;
+      --paper: #f3eee8;
+      --muted: #a89e98;
+      --rose: #c9977e;
+      --rose-light: #e7c3b1;
+      --rose-deep: #8f6251;
+      --line: rgba(201, 151, 126, 0.24);
+      --glass: rgba(18, 18, 23, 0.72);
+      --shadow: rgba(0, 0, 0, 0.44);
+      --ease: cubic-bezier(.22, .8, .24, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      background: var(--ink);
+    }
+
+    body {
+      min-height: 100svh;
+      overflow-x: hidden;
+      color: var(--paper);
+      font-family: "Inter", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background:
+        radial-gradient(circle at 50% 34%, rgba(201, 151, 126, 0.095), transparent 34rem),
+        radial-gradient(circle at 12% 12%, rgba(231, 195, 177, 0.04), transparent 22rem),
+        linear-gradient(145deg, #09090c 0%, #0d0d12 48%, #08080b 100%);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    .carbon-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.22;
+      background:
+        linear-gradient(27deg, #15151a 5px, transparent 5px) 0 5px,
+        linear-gradient(207deg, #15151a 5px, transparent 5px) 10px 0,
+        linear-gradient(27deg, #202027 5px, transparent 5px) 0 10px,
+        linear-gradient(207deg, #202027 5px, transparent 5px) 10px 5px,
+        linear-gradient(90deg, #18181e 10px, transparent 10px),
+        linear-gradient(#111116 25%, #0b0b0f 25%, #0b0b0f 50%, transparent 50%, transparent 75%, #1b1b21 75%);
+      background-size: 20px 20px;
+      mask-image: radial-gradient(circle at center, rgba(0,0,0,.88), rgba(0,0,0,.18) 58%, transparent 88%);
+    }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.72);
+    }
+
+    .ambient {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .ambient-dot {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--rose-light);
+      opacity: 0;
+      animation: twinkle var(--duration) ease-in-out infinite;
+      animation-delay: var(--delay);
+      box-shadow: 0 0 10px rgba(231, 195, 177, 0.35);
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; transform: scale(.65); }
+      48% { opacity: var(--alpha); transform: scale(1); }
+    }
+
+    .screen {
+      position: relative;
+      z-index: 10;
+      min-height: 100svh;
+      width: min(100%, 920px);
+      margin: 0 auto;
+      padding: max(24px, env(safe-area-inset-top)) 24px max(28px, env(safe-area-inset-bottom));
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .screen.is-active {
+      display: flex;
+      animation: screenIn 900ms var(--ease) both;
+    }
+
+    @keyframes screenIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      color: var(--rose);
+      font-size: 0.67rem;
+      font-weight: 300;
+      letter-spacing: .36em;
+      text-transform: uppercase;
+    }
+
+    .persian {
+      font-family: "Vazirmatn", sans-serif;
+      direction: rtl;
+      font-weight: 200;
+    }
+
+    .login-wrap {
+      width: min(100%, 480px);
+      text-align: center;
+    }
+
+    .halo {
+      width: 94px;
+      height: 94px;
+      margin: 0 auto 28px;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .halo::before,
+    .halo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(201, 151, 126, .2);
+      border-radius: 50%;
+    }
+
+    .halo::after {
+      inset: 14px;
+      border-color: rgba(231, 195, 177, .11);
+      box-shadow: 0 0 44px rgba(201, 151, 126, .13);
+    }
+
+    .halo-mark {
+      color: var(--rose-light);
+      font-size: 1.65rem;
+      transform: translateY(-1px);
+      text-shadow: 0 0 18px rgba(231, 195, 177, .28);
+    }
+
+    .hero-fa {
+      color: var(--rose-light);
+      font-size: clamp(3rem, 13vw, 5.5rem);
+      line-height: 1.2;
+      text-shadow: 0 0 30px rgba(201, 151, 126, .13);
+    }
+
+    .hero-subtitle {
+      margin-top: 12px;
+      color: var(--muted);
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.08rem, 4vw, 1.34rem);
+      font-style: italic;
+      font-weight: 300;
+      letter-spacing: .035em;
+    }
+
+    .hairline {
+      width: 64px;
+      height: 1px;
+      margin: 28px auto;
+      background: linear-gradient(90deg, transparent, var(--rose), transparent);
+      opacity: .65;
+    }
+
+    .password-box {
+      width: min(100%, 310px);
+      margin: 0 auto;
+    }
+
+    .password-input {
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      outline: 0;
+      color: var(--paper);
+      background: transparent;
+      padding: 13px 8px;
+      text-align: center;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.25rem;
+      letter-spacing: .12em;
+      transition: border-color 240ms ease, box-shadow 240ms ease;
+    }
+
+    .password-input::placeholder {
+      color: rgba(168, 158, 152, .62);
+      letter-spacing: .04em;
+      font-style: italic;
+    }
+
+    .password-input:focus {
+      border-bottom-color: rgba(231, 195, 177, .65);
+      box-shadow: 0 9px 18px -18px rgba(231, 195, 177, .7);
+    }
+
+    .primary-btn {
+      min-width: 150px;
+      margin-top: 26px;
+      padding: 12px 24px;
+      border: 1px solid rgba(201, 151, 126, .42);
+      border-radius: 999px;
+      background: rgba(201, 151, 126, .035);
+      color: var(--rose-light);
+      cursor: pointer;
+      font-size: .7rem;
+      font-weight: 300;
+      letter-spacing: .34em;
+      text-transform: uppercase;
+      transition:
+        transform 220ms var(--ease),
+        border-color 220ms ease,
+        background 220ms ease,
+        box-shadow 220ms ease;
+    }
+
+    .primary-btn:hover,
+    .primary-btn:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(231, 195, 177, .72);
+      background: rgba(201, 151, 126, .08);
+      box-shadow: 0 13px 35px rgba(0, 0, 0, .28);
+      outline: none;
+    }
+
+    .primary-btn:active {
+      transform: translateY(0) scale(.985);
+    }
+
+    .primary-btn:disabled {
+      cursor: wait;
+      opacity: .6;
+      transform: none;
+    }
+
+    .error {
+      min-height: 20px;
+      margin-top: 15px;
+      color: #d9a99a;
+      font-size: .76rem;
+      font-weight: 300;
+      opacity: 0;
+      transition: opacity 180ms ease;
+    }
+
+    .error.is-visible {
+      opacity: 1;
+    }
+
+    .letter-wrap {
+      width: min(100%, 560px);
+      text-align: center;
+    }
+
+    .letter-kicker {
+      margin-bottom: 24px;
+    }
+
+    .letter-title {
+      margin-top: 12px;
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.8rem, 7vw, 2.8rem);
+      font-weight: 300;
+    }
+
+    .envelope-button {
+      position: relative;
+      width: min(82vw, 340px);
+      height: 236px;
+      margin: 34px auto 22px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      perspective: 1000px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .envelope-shadow {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      bottom: 2px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, .62);
+      filter: blur(14px);
+      transition: transform 800ms var(--ease), opacity 800ms ease;
+    }
+
+    .envelope {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 24px;
+      height: 188px;
+      border: 1px solid rgba(201, 151, 126, .28);
+      border-radius: 8px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.025), transparent 45%),
+        linear-gradient(160deg, #18181e, #0f0f14 72%);
+      box-shadow:
+        0 28px 65px rgba(0, 0, 0, .46),
+        inset 0 1px rgba(255,255,255,.035);
+      overflow: visible;
+      transition: transform 800ms var(--ease);
+    }
+
+    .envelope::before,
+    .envelope::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .envelope::before {
+      background: linear-gradient(33deg, rgba(201,151,126,.08) 0 49.4%, transparent 50%);
+      clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .envelope::after {
+      background: linear-gradient(327deg, rgba(255,255,255,.025) 0 49.4%, transparent 50%);
+      clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .letter-card {
+      position: absolute;
+      left: 9%;
+      right: 9%;
+      top: 22px;
+      height: 138px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(201,151,126,.17);
+      border-radius: 6px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(201,151,126,.09), transparent 58%),
+        #111116;
+      box-shadow: 0 12px 30px rgba(0,0,0,.32);
+      transition: transform 900ms var(--ease), opacity 900ms ease;
+      z-index: 1;
+    }
+
+    .letter-card-inner {
+      transform: translateY(-3px);
+    }
+
+    .letter-card-fa {
+      color: var(--rose-light);
+      font-size: 1.35rem;
+    }
+
+    .letter-card-tr {
+      margin-top: 6px;
+      color: var(--muted);
+      font-family: "Cormorant Garamond", serif;
+      font-size: .95rem;
+      font-style: italic;
+    }
+
+    .flap {
+      position: absolute;
+      inset: -1px -1px auto;
+      height: 112px;
+      z-index: 4;
+      transform-origin: top center;
+      backface-visibility: hidden;
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
+      background: linear-gradient(165deg, #202027 0%, #111116 88%);
+      border-top: 1px solid rgba(201,151,126,.23);
+      transition: transform 900ms var(--ease), filter 900ms ease;
+    }
+
+    .seal {
+      position: absolute;
+      left: 50%;
+      top: 78px;
+      z-index: 6;
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      transform: translateX(-50%);
+      border: 1px solid rgba(231,195,177,.42);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 36% 30%, rgba(255,255,255,.18), transparent 25%),
+        linear-gradient(145deg, #b17d68, #7f5446);
+      color: #f2d7c8;
+      font-size: 1.15rem;
+      box-shadow:
+        0 6px 14px rgba(0,0,0,.4),
+        0 0 24px rgba(201,151,126,.12);
+      transition: opacity 360ms ease, transform 800ms var(--ease);
+    }
+
+    .envelope-button.is-open .flap {
+      transform: rotateX(178deg);
+      filter: brightness(.78);
+      z-index: 0;
+    }
+
+    .envelope-button.is-open .seal {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-10px) scale(.7);
+    }
+
+    .envelope-button.is-open .letter-card {
+      transform: translateY(-86px);
+    }
+
+    .envelope-button.is-open .envelope {
+      transform: translateY(12px);
+    }
+
+    .envelope-button.is-open .envelope-shadow {
+      transform: scaleX(.9) translateY(12px);
+      opacity: .7;
+    }
+
+    .open-hint {
+      color: rgba(168,158,152,.78);
+      font-size: .69rem;
+      font-weight: 300;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    .story-wrap {
+      width: min(100%, 650px);
+    }
+
+    .story-card {
+      position: relative;
+      min-height: min(680px, calc(100svh - 52px));
+      padding: clamp(30px, 6vw, 54px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(201,151,126,.15);
+      border-radius: 24px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.028), transparent 28%),
+        radial-gradient(circle at 50% 10%, rgba(201,151,126,.07), transparent 44%),
+        rgba(14,14,18,.76);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 36px 90px rgba(0,0,0,.38);
+      overflow: hidden;
+    }
+
+    .story-card::after {
+      content: "";
+      position: absolute;
+      inset: 13px;
+      border: 1px solid rgba(201,151,126,.06);
+      border-radius: 17px;
+      pointer-events: none;
+    }
+
+    .story-top,
+    .story-body,
+    .story-footer {
+      position: relative;
+      z-index: 2;
+    }
+
+    .story-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .story-brand {
+      color: var(--rose-light);
+      font-size: 1.14rem;
+    }
+
+    .progress {
+      display: flex;
+      gap: 8px;
+    }
+
+    .progress-dot {
+      width: 18px;
+      height: 2px;
+      border-radius: 99px;
+      background: rgba(168,158,152,.18);
+      transition: width 350ms var(--ease), background 350ms ease;
+    }
+
+    .progress-dot.is-active {
+      width: 34px;
+      background: var(--rose);
+    }
+
+    .story-body {
+      display: grid;
+      align-items: center;
+      flex: 1;
+      padding: 38px 0 28px;
+    }
+
+    .chapter {
+      display: none;
+      text-align: center;
+    }
+
+    .chapter.is-active {
+      display: block;
+      animation: chapterIn 760ms var(--ease) both;
+    }
+
+    @keyframes chapterIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chapter-number {
+      color: var(--rose);
+      font-size: .64rem;
+      font-weight: 300;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+    }
+
+    .chapter-title {
+      margin: 18px auto 18px;
+      max-width: 540px;
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(2rem, 8vw, 3.65rem);
+      line-height: 1.05;
+      font-weight: 300;
+    }
+
+    .chapter-copy {
+      max-width: 520px;
+      margin: 0 auto;
+      color: #d6ceca;
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.12rem, 4vw, 1.36rem);
+      line-height: 1.75;
+      font-weight: 300;
+    }
+
+    .chapter-copy + .chapter-copy {
+      margin-top: 16px;
+    }
+
+    .chapter-fa {
+      margin: 20px auto 10px;
+      color: var(--rose-light);
+      font-size: clamp(1.65rem, 7vw, 2.7rem);
+      line-height: 1.75;
+      text-shadow: 0 0 26px rgba(201,151,126,.12);
+    }
+
+    .chapter-meaning {
+      color: var(--muted);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.04rem;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    .angel-mark {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 18px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(201,151,126,.2);
+      border-radius: 50%;
+      color: var(--rose-light);
+      font-size: 1.55rem;
+      box-shadow: 0 0 38px rgba(201,151,126,.07);
+    }
+
+    .moment-box {
+      max-width: 520px;
+      margin: 25px auto 0;
+      padding: 24px 22px;
+      border: 1px solid rgba(201,151,126,.14);
+      border-radius: 16px;
+      background: rgba(255,255,255,.018);
+      min-height: 164px;
+      display: grid;
+      place-items: center;
+    }
+
+    .moment-loading {
+      display: flex;
+      gap: 8px;
+    }
+
+    .moment-loading span {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--rose);
+      animation: pulseDot 1.2s ease-in-out infinite;
+    }
+
+    .moment-loading span:nth-child(2) { animation-delay: .16s; }
+    .moment-loading span:nth-child(3) { animation-delay: .32s; }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: .2; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-4px); }
+    }
+
+    .moment-tr {
+      color: #ddd5d0;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.18rem;
+      line-height: 1.65;
+    }
+
+    .moment-fa {
+      margin-top: 16px;
+      color: var(--rose-light);
+      font-size: 1.16rem;
+      line-height: 1.8;
+    }
+
+    .moment-meaning {
+      margin-top: 8px;
+      color: var(--muted);
+      font-family: "Cormorant Garamond", serif;
+      font-size: .95rem;
+      font-style: italic;
+      line-height: 1.55;
+    }
+
+    .signature {
+      margin-top: 26px;
+      color: var(--rose-light);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.24rem;
+      font-style: italic;
+    }
+
+    .story-footer {
+      min-height: 52px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .next-btn {
+      min-width: 156px;
+      padding: 11px 22px;
+      border: 0;
+      border-bottom: 1px solid rgba(201,151,126,.38);
+      background: transparent;
+      color: var(--rose-light);
+      cursor: pointer;
+      font-size: .68rem;
+      font-weight: 300;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      transition: transform 220ms ease, border-color 220ms ease;
+    }
+
+    .next-btn:hover,
+    .next-btn:focus-visible {
+      border-bottom-color: rgba(231,195,177,.78);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .next-btn.is-hidden {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .spark {
+      position: fixed;
+      z-index: 20;
+      pointer-events: none;
+      color: var(--rose-light);
+      font-size: .68rem;
+      animation: sparkOut 900ms ease forwards;
+    }
+
+    @keyframes sparkOut {
+      from { opacity: .75; transform: translate(-50%, -50%) scale(.7); }
+      to { opacity: 0; transform: translate(-50%, -32px) scale(1.1); }
+    }
+
+    @media (max-width: 620px) {
+      .screen {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .story-card {
+        min-height: calc(100svh - 32px);
+        border-radius: 20px;
+        padding: 28px 22px 24px;
+      }
+
+      .story-card::after {
+        inset: 9px;
+        border-radius: 14px;
+      }
+
+      .story-body {
+        padding-top: 28px;
+      }
+
+      .envelope-button {
+        width: min(88vw, 320px);
+      }
+
+      .carbon-layer {
+        opacity: .17;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="corner-glow tl"></div>
-<div class="corner-glow br"></div>
-<div class="corner-glow tr"></div>
-<div class="corner-glow bl"></div>
-<div class="farsi-bg top-left" id="farsi-bg-tl">ف</div>
-<div class="farsi-bg bottom-right" id="farsi-bg-br">ه</div>
-<div class="gold-line left-line" id="line-l"></div>
-<div class="gold-line right-line" id="line-r"></div>
-<div class="feather-decor f1" id="feather1">🪶</div>
-<div class="feather-decor f2" id="feather2">🪶</div>
-<div class="feather-decor f3" id="feather3">🕊️</div>
-<div class="side-decor left" id="side-left"></div>
-<div class="side-decor right" id="side-right"></div>
-<div class="stars" id="stars"></div>
+  <div class="carbon-layer" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="ambient" id="ambient" aria-hidden="true"></div>
 
-<div id="password-screen">
-   <div class="farsi-title" id="farsi-title">فرشته</div>
-   <div class="subtitle" id="subtitle">Bir şeyler seni bekliyor</div>
-   <div class="divider" id="divider-pw"></div>
-   <div class="password-container">
-       <input type="text" id="password-input" placeholder="şifreni gir..." autocomplete="off" autocorrect="off" spellcheck="false">
-   </div>
-   <button id="enter-btn">Gir</button>
-   <div id="error-msg">Yanlış şifre...</div>
-</div>
+  <main>
+    <section class="screen is-active" id="login-screen" aria-labelledby="login-title">
+      <div class="login-wrap">
+        <div class="halo" aria-hidden="true">
+          <div class="halo-mark">✦</div>
+        </div>
 
-<div id="main-screen">
-   <div class="angel-container">
-       <div class="angel-glow" id="angel-glow"></div>
-       <div class="angel" id="angel">🕊️</div>
-   </div>
-   <div class="farsi-header" id="farsi-header">فرشته</div>
-   <div class="farsi-meaning" id="farsi-meaning">Fereshteh · Melek</div>
-   <div class="divider" id="divider1"></div>
-   <div class="message-block" id="msg1">
-       <div class="message-tr" id="msg1-tr">
-           Bazı insanlar hayatına girer, fark etmeden her şeyi değiştirir.
-           <span id="msg1-span">Sen de öylesin.</span>
-       </div>
-   </div>
-   <div class="message-block" id="msg2">
-       <div class="message-fa" id="msg2-fa">
-           <div class="message-fa-text" id="msg2-fa-text">فرشته‌ای که نمی‌دانست فرشته است</div>
-           <div class="message-fa-meaning" id="msg2-fa-meaning">melek olduğunu bilmeyen melek</div>
-       </div>
-   </div>
-   <div class="message-block" id="msg3">
-       <div class="message-tr" id="msg3-tr">Seninle geçen her an, farkında bile olmadan aklımda kalıyor.</div>
-   </div>
-   <div class="divider" id="divider2" style="opacity:0; margin: 2rem auto;"></div>
-   <div class="ai-message-block" id="ai-block">
-       <div class="ai-label" id="ai-label">✦ bu an için</div>
-       <div id="ai-content">
-           <div class="loading-dots"><span></span><span></span><span></span></div>
-       </div>
-   </div>
-</div>
+        <div class="hero-fa persian" id="login-title">فرشته</div>
+        <p class="hero-subtitle">senin için saklanan küçük bir şey var</p>
+        <div class="hairline"></div>
 
-<script>
-   const themes = [
-       {
-           name: 'gece',
-           bg: '#0a0a14', text: '#f0ead6', gold: '#c9a84c', goldLight: '#e8c97a',
-           muted: '#8a8499', rose: '#c4a0b0', lavender: '#b0a8c8',
-           farsi: 'rgba(201,168,76,0.03)',
-           line: 'linear-gradient(to bottom, transparent, rgba(201,168,76,0.15), transparent)',
-           divider: 'linear-gradient(90deg, transparent, #c9a84c, transparent)',
-           angelGlow: 'radial-gradient(circle, rgba(201,168,76,0.06) 0%, rgba(196,160,176,0.04) 50%, transparent 70%)',
-           featherOp: '0.04',
-           starColors: ['#c9a84c','#c4a0b0','#b0a8c8','#f0ead6','#e8c97a'],
-           btnBorder: 'rgba(201,168,76,0.3)', inputBorder: 'rgba(201,168,76,0.25)',
-       },
-       {
-           name: 'gün batımı',
-           bg: '#1a0f0a', text: '#faebd7', gold: '#e8a87c', goldLight: '#f5c9a0',
-           muted: '#a08070', rose: '#d4907a', lavender: '#c4a89a',
-           farsi: 'rgba(232,168,124,0.04)',
-           line: 'linear-gradient(to bottom, transparent, rgba(232,168,124,0.15), transparent)',
-           divider: 'linear-gradient(90deg, transparent, #e8a87c, transparent)',
-           angelGlow: 'radial-gradient(circle, rgba(232,168,124,0.08) 0%, rgba(212,144,122,0.04) 50%, transparent 70%)',
-           featherOp: '0.05',
-           starColors: ['#e8a87c','#d4907a','#f5c9a0','#faebd7','#c4a89a'],
-           btnBorder: 'rgba(232,168,124,0.3)', inputBorder: 'rgba(232,168,124,0.25)',
-       },
-       {
-           name: 'şafak',
-           bg: '#f5f0f8', text: '#3a2a4a', gold: '#9b7ab0', goldLight: '#b899c8',
-           muted: '#8a7a9a', rose: '#c4a0b8', lavender: '#9490b8',
-           farsi: 'rgba(155,122,176,0.05)',
-           line: 'linear-gradient(to bottom, transparent, rgba(155,122,176,0.2), transparent)',
-           divider: 'linear-gradient(90deg, transparent, #9b7ab0, transparent)',
-           angelGlow: 'radial-gradient(circle, rgba(155,122,176,0.08) 0%, rgba(196,160,184,0.05) 50%, transparent 70%)',
-           featherOp: '0.08',
-           starColors: ['#9b7ab0','#c4a0b8','#9490b8','#3a2a4a','#b899c8'],
-           btnBorder: 'rgba(155,122,176,0.4)', inputBorder: 'rgba(155,122,176,0.3)',
-       },
-       {
-           name: 'gece yarısı',
-           bg: '#080814', text: '#e8e0f0', gold: '#9090d0', goldLight: '#b0b0e8',
-           muted: '#6a6890', rose: '#9880b8', lavender: '#8090c8',
-           farsi: 'rgba(144,144,208,0.03)',
-           line: 'linear-gradient(to bottom, transparent, rgba(144,144,208,0.15), transparent)',
-           divider: 'linear-gradient(90deg, transparent, #9090d0, transparent)',
-           angelGlow: 'radial-gradient(circle, rgba(144,144,208,0.07) 0%, rgba(152,128,184,0.04) 50%, transparent 70%)',
-           featherOp: '0.04',
-           starColors: ['#9090d0','#9880b8','#8090c8','#e8e0f0','#b0b0e8'],
-           btnBorder: 'rgba(144,144,208,0.3)', inputBorder: 'rgba(144,144,208,0.25)',
-       },
-       {
-           name: 'sabah',
-           bg: '#f8f4ee', text: '#3a2e20', gold: '#b8943c', goldLight: '#d4aa58',
-           muted: '#9a8870', rose: '#c49878', lavender: '#a89878',
-           farsi: 'rgba(184,148,60,0.04)',
-           line: 'linear-gradient(to bottom, transparent, rgba(184,148,60,0.18), transparent)',
-           divider: 'linear-gradient(90deg, transparent, #b8943c, transparent)',
-           angelGlow: 'radial-gradient(circle, rgba(184,148,60,0.07) 0%, rgba(196,152,120,0.04) 50%, transparent 70%)',
-           featherOp: '0.07',
-           starColors: ['#b8943c','#c49878','#a89878','#3a2e20','#d4aa58'],
-           btnBorder: 'rgba(184,148,60,0.3)', inputBorder: 'rgba(184,148,60,0.25)',
-       }
-   ];
+        <div class="password-box">
+          <input
+            class="password-input"
+            id="password-input"
+            type="password"
+            inputmode="text"
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
+            placeholder="şifre"
+            aria-label="Şifre"
+          >
+          <button class="primary-btn" id="enter-btn" type="button">Aç</button>
+          <div class="error" id="error-msg" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
 
-   let currentTheme = 0;
+    <section class="screen" id="letter-screen" aria-labelledby="letter-title">
+      <div class="letter-wrap">
+        <div class="letter-kicker eyebrow">Tannaz için</div>
+        <h1 class="letter-title" id="letter-title">Küçük bir zarf bıraktım.</h1>
 
-   function applyTheme(t) {
-       document.body.style.backgroundColor = t.bg;
-       document.body.style.color = t.text;
-       const setColor = (id, color) => { const el = document.getElementById(id); if(el) el.style.color = color; };
-       const setStyle = (id, prop, val) => { const el = document.getElementById(id); if(el) el.style[prop] = val; };
-       setColor('farsi-title', t.gold);
-       setColor('subtitle', t.muted);
-       setColor('farsi-header', t.gold);
-       setColor('farsi-meaning', t.muted);
-       setColor('msg1-tr', t.text);
-       setColor('msg1-span', t.text);
-       setColor('msg2-fa-text', t.goldLight);
-       setColor('msg2-fa-meaning', t.rose);
-       setColor('msg3-tr', t.text);
-       setColor('ai-label', t.rose);
-       document.querySelectorAll('.ai-tr').forEach(el => el.style.color = t.text);
-       document.querySelectorAll('.ai-fa').forEach(el => el.style.color = t.goldLight);
-       document.querySelectorAll('.ai-anlam').forEach(el => el.style.color = t.lavender);
-       const input = document.getElementById('password-input');
-       if(input) { input.style.color = t.text; input.style.borderBottomColor = t.inputBorder; }
-       const btn = document.getElementById('enter-btn');
-       if(btn) { btn.style.color = t.gold; btn.style.borderColor = t.btnBorder; btn.style.border = `1px solid ${t.btnBorder}`; }
-       document.querySelectorAll('.divider').forEach(el => el.style.background = t.divider);
-       setStyle('line-l', 'background', t.line);
-       setStyle('line-r', 'background', t.line);
-       setStyle('angel-glow', 'background', t.angelGlow);
-       const angel = document.getElementById('angel');
-       if(angel) angel.style.filter = `drop-shadow(0 0 20px ${t.gold}44) drop-shadow(0 0 40px ${t.rose}22)`;
-       setStyle('farsi-bg-tl', 'color', t.farsi);
-       setStyle('farsi-bg-br', 'color', t.farsi);
-       ['feather1','feather2','feather3'].forEach(id => { const el = document.getElementById(id); if(el) el.style.opacity = t.featherOp; });
-       document.querySelectorAll('.loading-dots span').forEach(el => el.style.background = t.gold);
-       document.querySelectorAll('.star').forEach(el => { el.style.background = t.starColors[Math.floor(Math.random() * t.starColors.length)]; });
-       document.querySelectorAll('.side-star').forEach(el => { el.style.color = t.starColors[Math.floor(Math.random() * t.starColors.length)]; });
-       const mfa = document.getElementById('msg2-fa');
-       if(mfa) mfa.style.borderTopColor = t.gold + '22';
-       const aiBlock = document.getElementById('ai-block');
-       if(aiBlock) aiBlock.style.borderTopColor = t.gold + '15';
-   }
+        <button class="envelope-button" id="envelope-btn" type="button" aria-label="Zarfı aç">
+          <div class="envelope-shadow"></div>
+          <div class="envelope">
+            <div class="letter-card">
+              <div class="letter-card-inner">
+                <div class="letter-card-fa persian">برای تو</div>
+                <div class="letter-card-tr">senin için</div>
+              </div>
+            </div>
+            <div class="flap"></div>
+            <div class="seal" aria-hidden="true">♥</div>
+          </div>
+        </button>
 
-   applyTheme(themes[0]);
-   setInterval(() => {
-       currentTheme = (currentTheme + 1) % themes.length;
-       applyTheme(themes[currentTheme]);
-   }, 20000);
+        <div class="open-hint">dokun ve aç</div>
+      </div>
+    </section>
 
-   const starsContainer = document.getElementById('stars');
-   for (let i = 0; i < 100; i++) {
-       const star = document.createElement('div');
-       star.className = 'star';
-       star.style.left = Math.random() * 100 + '%';
-       star.style.top = Math.random() * 100 + '%';
-       star.style.setProperty('--dur', (2 + Math.random() * 5) + 's');
-       star.style.setProperty('--op', (0.15 + Math.random() * 0.5).toString());
-       star.style.animationDelay = Math.random() * 5 + 's';
-       const size = 1 + Math.random() * 1.5;
-       star.style.width = size + 'px';
-       star.style.height = size + 'px';
-       star.style.background = themes[0].starColors[Math.floor(Math.random() * themes[0].starColors.length)];
-       starsContainer.appendChild(star);
-   }
+    <section class="screen" id="story-screen" aria-label="Dijital mektup">
+      <div class="story-wrap">
+        <article class="story-card">
+          <header class="story-top">
+            <div class="story-brand persian">فرشته</div>
+            <div class="progress" aria-label="İlerleme">
+              <span class="progress-dot is-active"></span>
+              <span class="progress-dot"></span>
+              <span class="progress-dot"></span>
+              <span class="progress-dot"></span>
+            </div>
+          </header>
 
-   function createSideStars(containerId) {
-       const container = document.getElementById(containerId);
-       const symbols = ['✦', '✧', '⋆', '˚', '·', '✵', '✴'];
-       for (let i = 0; i < 18; i++) {
-           const star = document.createElement('div');
-           star.className = 'side-star';
-           star.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-           star.style.left = (Math.random() * 80) + '%';
-           star.style.top = (Math.random() * 100) + '%';
-           star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
-           star.style.setProperty('--op', (0.2 + Math.random() * 0.5).toString());
-           star.style.setProperty('--sz', (0.5 + Math.random() * 0.7) + 'rem');
-           star.style.animationDelay = Math.random() * 4 + 's';
-           star.style.color = themes[0].starColors[Math.floor(Math.random() * themes[0].starColors.length)];
-           container.appendChild(star);
-       }
-   }
-   createSideStars('side-left');
-   createSideStars('side-right');
+          <div class="story-body">
+            <section class="chapter is-active">
+              <div class="chapter-number">01 · küçük bir not</div>
+              <h2 class="chapter-title">Bir şey söylemek istedim.</h2>
+              <p class="chapter-copy">
+                Bazı insanlar hayatına sessizce girer ve fark etmeden bazı anları daha güzel yapar.
+                Sen de bende biraz öyle bir iz bıraktın.
+              </p>
+            </section>
 
-   function createSparkle(x, y) {
-       const t = themes[currentTheme];
-       const sparkles = ['✦', '✧', '·', '⋆', '˚', '✵'];
-       for (let i = 0; i < 4; i++) {
-           setTimeout(() => {
-               const s = document.createElement('div');
-               s.className = 'sparkle';
-               s.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
-               s.style.left = (x + (Math.random() - 0.5) * 60) + 'px';
-               s.style.top = (y + (Math.random() - 0.5) * 60) + 'px';
-               s.style.color = t.starColors[Math.floor(Math.random() * t.starColors.length)];
-               document.body.appendChild(s);
-               setTimeout(() => s.remove(), 2000);
-           }, i * 150);
-       }
-   }
+            <section class="chapter">
+              <div class="angel-mark" aria-hidden="true">✦</div>
+              <div class="chapter-number">02 · فرشته</div>
+              <div class="chapter-fa persian">فرشته‌ای که نمی‌دانست فرشته است</div>
+              <div class="chapter-meaning">melek olduğunu bilmeyen melek</div>
+              <p class="chapter-copy" style="margin-top:24px;">
+                Bu yüzden bu küçük hediyenin merkezinde bir melek var.
+              </p>
+            </section>
 
-   document.addEventListener('click', (e) => {
-       if (document.getElementById('main-screen').style.display === 'block') createSparkle(e.clientX, e.clientY);
-   });
+            <section class="chapter">
+              <div class="chapter-number">03 · neden yaptım</div>
+              <h2 class="chapter-title">Sadece gülümsersin diye.</h2>
+              <p class="chapter-copy">
+                Bunu büyük sözler söylemek için değil, bir gün açıp yüzünde küçük bir gülümseme olur diye hazırladım.
+              </p>
+              <p class="chapter-copy">
+                Biraz kod, biraz uğraş, biraz da senden kalan güzel düşünceler.
+              </p>
+            </section>
 
-   async function checkPassword() {
-       const input = document.getElementById('password-input').value.trim();
-       try {
-           const res = await fetch('/verify', {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({ password: input })
-           });
-           const data = await res.json();
-           if (data.success) {
-               showMainScreen();
-           } else {
-               const errMsg = document.getElementById('error-msg');
-               errMsg.style.opacity = '1';
-               setTimeout(() => { errMsg.style.opacity = '0'; }, 2000);
-           }
-       } catch(e) { console.error(e); }
-   }
+            <section class="chapter" id="moment-chapter">
+              <div class="chapter-number">04 · فقط برای این لحظه</div>
+              <h2 class="chapter-title">Yalnızca bu an için.</h2>
 
-   document.getElementById('enter-btn').addEventListener('click', checkPassword);
-   document.getElementById('password-input').addEventListener('keypress', (e) => {
-       if (e.key === 'Enter') checkPassword();
-   });
+              <div class="moment-box" id="moment-box" aria-live="polite">
+                <div class="moment-loading" id="moment-loading" aria-label="Mesaj hazırlanıyor">
+                  <span></span><span></span><span></span>
+                </div>
+                <div id="moment-content" hidden>
+                  <div class="moment-tr" id="moment-tr"></div>
+                  <div class="moment-fa persian" id="moment-fa"></div>
+                  <div class="moment-meaning" id="moment-meaning"></div>
+                </div>
+              </div>
 
-   function showMainScreen() {
-       const pw = document.getElementById('password-screen');
-       pw.style.transition = 'opacity 1s ease';
-       pw.style.opacity = '0';
-       setTimeout(() => {
-           pw.style.display = 'none';
-           const main = document.getElementById('main-screen');
-           main.style.display = 'block';
-           runSequence();
-       }, 1000);
-   }
+              <div class="signature">— Amir</div>
+            </section>
+          </div>
 
-   function animateEl(el, delay, duration = 1200) {
-       return new Promise(resolve => {
-           setTimeout(() => {
-               el.style.transition = `opacity ${duration}ms ease, transform ${duration}ms ease`;
-               el.style.transform = 'translateY(20px)';
-               el.style.opacity = '0';
-               requestAnimationFrame(() => {
-                   setTimeout(() => {
-                       el.style.transform = 'translateY(0)';
-                       el.style.opacity = '1';
-                       setTimeout(resolve, duration);
-                   }, 50);
-               });
-           }, delay);
-       });
-   }
+          <footer class="story-footer">
+            <button class="next-btn" id="next-btn" type="button">devam et ✦</button>
+          </footer>
+        </article>
+      </div>
+    </section>
+  </main>
 
-   async function runSequence() {
-       const angel = document.getElementById('angel');
-       setTimeout(() => { angel.style.transition = 'opacity 2s ease'; angel.style.opacity = '1'; }, 300);
-       await animateEl(document.getElementById('farsi-header'), 800);
-       await animateEl(document.getElementById('farsi-meaning'), 200);
-       await animateEl(document.getElementById('msg1'), 600);
-       await animateEl(document.getElementById('msg2'), 800);
-       await animateEl(document.getElementById('msg3'), 800);
-       setTimeout(() => { document.getElementById('divider2').style.transition = 'opacity 1s ease'; document.getElementById('divider2').style.opacity = '1'; }, 500);
-       await animateEl(document.getElementById('ai-block'), 800);
-       fetchAIMessage();
-   }
+  <script>
+    const screens = Array.from(document.querySelectorAll(".screen"));
+    const chapters = Array.from(document.querySelectorAll(".chapter"));
+    const progressDots = Array.from(document.querySelectorAll(".progress-dot"));
+    const nextButton = document.getElementById("next-btn");
+    const passwordInput = document.getElementById("password-input");
+    const enterButton = document.getElementById("enter-btn");
+    const errorMessage = document.getElementById("error-msg");
+    const envelopeButton = document.getElementById("envelope-btn");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-   async function fetchAIMessage() {
-       try {
-           const res = await fetch('/get_message?t=' + Date.now());
-           const data = await res.json();
-           if (data.success) {
-               const content = document.getElementById('ai-content');
-               content.style.transition = 'opacity 0.5s ease';
-               content.style.opacity = '0';
-               const t = themes[currentTheme];
-               setTimeout(() => {
-                   content.innerHTML = `
-                       <div class="ai-tr" style="color:${t.text}">${data.tr}</div>
-                       <div class="ai-fa" style="color:${t.goldLight}">${data.fa}</div>
-                       <div class="ai-anlam" style="color:${t.lavender}">${data.anlam}</div>
-                   `;
-                   content.style.opacity = '1';
-               }, 500);
-           }
-       } catch(e) {
-           document.getElementById('ai-content').innerHTML = `
-               <div class="ai-tr">Her bakışında farklı bir dünya görüyorum.</div>
-               <div class="ai-fa">تو آرامشی هستی که انتظارش را نداشتم</div>
-               <div class="ai-anlam">sen beklenmediğim bir huzursun</div>
-           `;
-       }
-   }
-</script>
+    let currentChapter = 0;
+    let momentLoaded = false;
+
+    function showScreen(id) {
+      screens.forEach(function(screen) {
+        screen.classList.toggle("is-active", screen.id === id);
+      });
+    }
+
+    function setError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.toggle("is-visible", Boolean(message));
+    }
+
+    async function verifyPassword() {
+      const password = passwordInput.value.trim();
+
+      if (!password) {
+        setError("Önce küçük sırrı gir.");
+        return;
+      }
+
+      setError("");
+      enterButton.disabled = true;
+      enterButton.textContent = "…";
+
+      try {
+        const response = await fetch("/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          passwordInput.blur();
+          setTimeout(function() {
+            showScreen("letter-screen");
+          }, reducedMotion ? 0 : 280);
+          return;
+        }
+
+        if (data.error === "site_not_configured") {
+          setError("Bu küçük sürpriz henüz tamamen hazır değil.");
+        } else {
+          setError("Bu anahtar o zarfı açmadı ✦");
+        }
+      } catch (error) {
+        setError("Bağlantıda küçük bir aksilik oldu. Tekrar dene.");
+      } finally {
+        enterButton.disabled = false;
+        enterButton.textContent = "Aç";
+      }
+    }
+
+    enterButton.addEventListener("click", verifyPassword);
+    passwordInput.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        verifyPassword();
+      }
+    });
+
+    envelopeButton.addEventListener("click", function() {
+      if (envelopeButton.classList.contains("is-open")) {
+        return;
+      }
+
+      envelopeButton.classList.add("is-open");
+
+      setTimeout(function() {
+        showScreen("story-screen");
+        showChapter(0);
+      }, reducedMotion ? 80 : 1120);
+    });
+
+    function showChapter(index) {
+      currentChapter = index;
+
+      chapters.forEach(function(chapter, chapterIndex) {
+        chapter.classList.toggle("is-active", chapterIndex === index);
+      });
+
+      progressDots.forEach(function(dot, dotIndex) {
+        dot.classList.toggle("is-active", dotIndex === index);
+      });
+
+      if (index === chapters.length - 1) {
+        nextButton.classList.add("is-hidden");
+        loadMoment();
+      } else {
+        nextButton.classList.remove("is-hidden");
+      }
+    }
+
+    nextButton.addEventListener("click", function() {
+      if (currentChapter < chapters.length - 1) {
+        showChapter(currentChapter + 1);
+      }
+    });
+
+    async function loadMoment() {
+      if (momentLoaded) {
+        return;
+      }
+
+      momentLoaded = true;
+
+      const loading = document.getElementById("moment-loading");
+      const content = document.getElementById("moment-content");
+      const tr = document.getElementById("moment-tr");
+      const fa = document.getElementById("moment-fa");
+      const meaning = document.getElementById("moment-meaning");
+
+      try {
+        const response = await fetch("/get_message", {
+          headers: { "Accept": "application/json" }
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error("message unavailable");
+        }
+
+        tr.textContent = data.tr;
+        fa.textContent = data.fa;
+        meaning.textContent = data.anlam;
+      } catch (error) {
+        tr.textContent = "Bu sayfa bir gün karşına çıkıp seni biraz gülümsetebilsin diye burada.";
+        fa.textContent = "امیدوارم این لحظه لبخند کوچکی برایت بیاورد";
+        meaning.textContent = "Umarım bu an sana küçük bir gülümseme getirir.";
+      } finally {
+        loading.hidden = true;
+        content.hidden = false;
+      }
+    }
+
+    function createAmbientDots() {
+      if (reducedMotion) {
+        return;
+      }
+
+      const ambient = document.getElementById("ambient");
+
+      for (let i = 0; i < 34; i += 1) {
+        const dot = document.createElement("span");
+        dot.className = "ambient-dot";
+        dot.style.left = (4 + Math.random() * 92) + "%";
+        dot.style.top = (4 + Math.random() * 92) + "%";
+        dot.style.setProperty("--duration", (3.4 + Math.random() * 5.8) + "s");
+        dot.style.setProperty("--delay", (Math.random() * 5) + "s");
+        dot.style.setProperty("--alpha", (0.14 + Math.random() * 0.38).toFixed(2));
+        ambient.appendChild(dot);
+      }
+    }
+
+    function createSpark(x, y) {
+      if (reducedMotion || !document.getElementById("story-screen").classList.contains("is-active")) {
+        return;
+      }
+
+      const spark = document.createElement("span");
+      spark.className = "spark";
+      spark.textContent = Math.random() > 0.5 ? "✦" : "·";
+      spark.style.left = x + "px";
+      spark.style.top = y + "px";
+      document.body.appendChild(spark);
+
+      window.setTimeout(function() {
+        spark.remove();
+      }, 950);
+    }
+
+    document.addEventListener("pointerdown", function(event) {
+      createSpark(event.clientX, event.clientY);
+    });
+
+    createAmbientDots();
+  </script>
 </body>
 </html>
