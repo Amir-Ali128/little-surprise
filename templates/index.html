@@ -691,6 +691,257 @@
       box-shadow: 0 0 26px rgba(201,151,126,.08);
     }
 
+    .angel-reveal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(201,151,126,.13), transparent 25rem),
+        rgba(7,7,10,.86);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .55s ease;
+    }
+
+    .angel-reveal.show {
+      opacity: 1;
+    }
+
+    .angel-emblem {
+      width: min(72vw, 310px);
+      text-align: center;
+      filter: drop-shadow(0 0 28px rgba(201,151,126,.18));
+    }
+
+    .angel-emblem svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+
+    .angel-stroke {
+      fill: none;
+      stroke: var(--rose-light);
+      stroke-width: 1.35;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: .88;
+      pathLength: 1;
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: angelDraw 2.05s cubic-bezier(.22,.7,.2,1) forwards;
+    }
+
+    .angel-stroke.soft {
+      stroke: var(--rose);
+      stroke-width: .9;
+      opacity: .52;
+      animation-delay: .18s;
+    }
+
+    .angel-halo {
+      fill: none;
+      stroke: var(--rose-light);
+      stroke-width: 1.1;
+      opacity: 0;
+      animation: haloIn 1.2s .7s ease forwards;
+    }
+
+    .angel-word {
+      margin-top: -8px;
+      color: var(--rose-light);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.9rem;
+      direction: rtl;
+      opacity: 0;
+      animation: haloIn 1.1s 1.05s ease forwards;
+    }
+
+    @keyframes angelDraw {
+      to { stroke-dashoffset: 0; }
+    }
+
+    @keyframes haloIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: .9; transform: translateY(0); }
+    }
+
+    .carbon-heart-trigger {
+      position: fixed;
+      right: max(16px, env(safe-area-inset-right));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 18;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(201,151,126,.16);
+      border-radius: 50%;
+      background: rgba(9,9,12,.58);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      opacity: .43;
+      box-shadow: 0 8px 24px rgba(0,0,0,.30);
+      transition: opacity .25s ease, transform .25s ease, border-color .25s ease;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .carbon-heart-trigger:hover,
+    .carbon-heart-trigger:focus-visible {
+      opacity: .82;
+      border-color: rgba(201,151,126,.34);
+      outline: none;
+    }
+
+    .carbon-heart-trigger .carbon-heart {
+      font-size: 1.22rem;
+      line-height: 1;
+      color: #26282d;
+      text-shadow:
+        0 0 0.6px rgba(231,195,177,.55),
+        0 0 12px rgba(201,151,126,.08);
+      background:
+        repeating-linear-gradient(45deg,
+          #303238 0 2px,
+          #15161a 2px 4px);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .carbon-heart-trigger .hold-ring {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      opacity: 0;
+      background: conic-gradient(var(--rose-light) 0deg, transparent 0deg);
+      -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
+      mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
+    }
+
+    .carbon-heart-trigger.holding {
+      opacity: .9;
+      transform: scale(1.04);
+    }
+
+    .carbon-heart-trigger.holding .hold-ring {
+      opacity: .72;
+      animation: holdRing 3s linear forwards;
+    }
+
+    @keyframes holdRing {
+      from { background: conic-gradient(var(--rose-light) 0deg, transparent 0deg); }
+      to { background: conic-gradient(var(--rose-light) 360deg, transparent 360deg); }
+    }
+
+    .easter-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background: rgba(4,4,7,.84);
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .35s ease;
+    }
+
+    .easter-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .easter-card {
+      width: min(100%, 440px);
+      position: relative;
+      overflow: hidden;
+      padding: 42px 30px 34px;
+      border: 1px solid rgba(201,151,126,.26);
+      border-radius: 26px;
+      text-align: center;
+      background:
+        repeating-linear-gradient(45deg,
+          rgba(255,255,255,.018) 0 3px,
+          rgba(0,0,0,.055) 3px 6px),
+        linear-gradient(145deg, #17181c, #090a0d);
+      box-shadow: 0 30px 90px rgba(0,0,0,.54);
+    }
+
+    .easter-card::before {
+      content: "";
+      position: absolute;
+      inset: -25%;
+      background: radial-gradient(circle, rgba(201,151,126,.11), transparent 42%);
+      pointer-events: none;
+    }
+
+    .easter-heart {
+      position: relative;
+      z-index: 1;
+      font-size: 2.2rem;
+      margin-bottom: 18px;
+      color: var(--rose-light);
+      text-shadow: 0 0 25px rgba(201,151,126,.18);
+    }
+
+    .easter-card h3 {
+      position: relative;
+      z-index: 1;
+      color: var(--ivory);
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.9rem, 7vw, 2.55rem);
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+
+    .easter-card p {
+      position: relative;
+      z-index: 1;
+      color: var(--muted);
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      line-height: 1.55;
+    }
+
+    .easter-card .farsi-whisper {
+      color: var(--rose-light);
+      direction: rtl;
+      margin-top: 14px;
+      font-size: 1.3rem;
+    }
+
+    .easter-close {
+      position: relative;
+      z-index: 1;
+      margin-top: 26px;
+    }
+
+    .final-teaser {
+      margin-top: 30px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(201,151,126,.16);
+      color: rgba(231,195,177,.72);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.08rem;
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .final-teaser span {
+      display: inline-block;
+      margin-right: 7px;
+      color: var(--rose);
+      font-style: normal;
+    }
+
     .progress {
       display: flex;
       justify-content: center;
@@ -806,6 +1057,27 @@
     <section class="screen experience hidden" id="experience">
       <div class="stage-label">for Tannaz · برای تو</div>
 
+      <button class="carbon-heart-trigger" id="carbon-heart-trigger" type="button" aria-label="Kalp detayı">
+        <span class="hold-ring" aria-hidden="true"></span>
+        <span class="carbon-heart" aria-hidden="true">♥</span>
+      </button>
+
+      <div class="angel-reveal hidden" id="angel-reveal" aria-hidden="true">
+        <div class="angel-emblem">
+          <svg viewBox="0 0 240 180" role="img" aria-label="Rose gold angel wings">
+            <ellipse class="angel-halo" cx="120" cy="31" rx="24" ry="7"></ellipse>
+            <path class="angel-stroke" pathLength="1" d="M112 128 C91 105 69 80 42 62 C39 94 58 122 99 137"></path>
+            <path class="angel-stroke soft" pathLength="1" d="M104 126 C83 112 67 94 56 76"></path>
+            <path class="angel-stroke soft" pathLength="1" d="M97 133 C78 126 62 113 51 98"></path>
+            <path class="angel-stroke" pathLength="1" d="M128 128 C149 105 171 80 198 62 C201 94 182 122 141 137"></path>
+            <path class="angel-stroke soft" pathLength="1" d="M136 126 C157 112 173 94 184 76"></path>
+            <path class="angel-stroke soft" pathLength="1" d="M143 133 C162 126 178 113 189 98"></path>
+            <path class="angel-stroke soft" pathLength="1" d="M120 56 C111 77 110 104 120 138 C130 104 129 77 120 56"></path>
+          </svg>
+          <div class="angel-word">فرشته</div>
+        </div>
+      </div>
+
       <div class="envelope-stage" id="envelope-stage">
         <div>
           <div class="envelope-wrap">
@@ -884,6 +1156,7 @@
           <h2>Hepsi bu.</h2>
           <p class="scene-copy">Sadece küçük bir sürpriz. Umarım açtığın anda, bir saniyeliğine bile olsa, yüzünü güldürmüştür.</p>
           <div class="signature">— Amir</div>
+          <div class="final-teaser"><span>✦</span>Bu, kutunun içindeki her şey değildi.</div>
         </article>
 
         <div class="progress" id="progress" aria-hidden="true"></div>
@@ -891,6 +1164,16 @@
       </div>
     </section>
   </main>
+
+  <div class="easter-overlay" id="easter-overlay" aria-hidden="true">
+    <div class="easter-card" role="dialog" aria-modal="true" aria-labelledby="easter-title">
+      <div class="easter-heart">♥</div>
+      <h3 id="easter-title">Bunu bulacağını tahmin etmiştim.</h3>
+      <p>Bazı küçük şeyler herkes için görünür olmak zorunda değil.</p>
+      <p class="farsi-whisper">پیدایش کردی.</p>
+      <button class="ghost-btn easter-close" id="easter-close" type="button">sakla</button>
+    </div>
+  </div>
 
   <script>
     const loginScreen = document.getElementById("login-screen");
@@ -906,8 +1189,14 @@
     const progress = document.getElementById("progress");
     const newNoteBtn = document.getElementById("new-note-btn");
     const aiContent = document.getElementById("ai-content");
+    const angelReveal = document.getElementById("angel-reveal");
+    const carbonHeartTrigger = document.getElementById("carbon-heart-trigger");
+    const easterOverlay = document.getElementById("easter-overlay");
+    const easterClose = document.getElementById("easter-close");
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let currentScene = 0;
     let messageLoading = false;
+    let heartHoldTimer = null;
 
     function createAmbientStars() {
       const ambient = document.getElementById("ambient");
@@ -1010,6 +1299,27 @@
       });
     });
 
+    function revealAngelThenStory() {
+      angelReveal.classList.remove("hidden");
+
+      requestAnimationFrame(function () {
+        angelReveal.classList.add("show");
+      });
+
+      const revealDuration = prefersReducedMotion ? 180 : 2600;
+      const fadeDuration = prefersReducedMotion ? 20 : 520;
+
+      window.setTimeout(function () {
+        angelReveal.classList.remove("show");
+
+        window.setTimeout(function () {
+          angelReveal.classList.add("hidden");
+          story.classList.remove("hidden");
+          story.classList.add("fade-up");
+        }, fadeDuration);
+      }, revealDuration);
+    }
+
     openLetterBtn.addEventListener("click", function () {
       envelope.classList.add("open");
       openLetterBtn.disabled = true;
@@ -1022,8 +1332,7 @@
 
         window.setTimeout(function () {
           envelopeStage.classList.add("hidden");
-          story.classList.remove("hidden");
-          story.classList.add("fade-up");
+          revealAngelThenStory();
         }, 520);
       }, 850);
     });
@@ -1084,6 +1393,60 @@
         newNoteBtn.disabled = false;
       }
     }
+
+    function openEasterEgg() {
+      window.clearTimeout(heartHoldTimer);
+      heartHoldTimer = null;
+      carbonHeartTrigger.classList.remove("holding");
+      easterOverlay.classList.add("show");
+      easterOverlay.setAttribute("aria-hidden", "false");
+      window.setTimeout(function () {
+        easterClose.focus();
+      }, 100);
+    }
+
+    function cancelHeartHold() {
+      window.clearTimeout(heartHoldTimer);
+      heartHoldTimer = null;
+      carbonHeartTrigger.classList.remove("holding");
+    }
+
+    function beginHeartHold(event) {
+      if (event && event.button !== undefined && event.button !== 0) return;
+      cancelHeartHold();
+      carbonHeartTrigger.classList.add("holding");
+      heartHoldTimer = window.setTimeout(openEasterEgg, 3000);
+    }
+
+    carbonHeartTrigger.addEventListener("pointerdown", beginHeartHold);
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (name) {
+      carbonHeartTrigger.addEventListener(name, cancelHeartHold);
+    });
+    carbonHeartTrigger.addEventListener("contextmenu", function (event) {
+      event.preventDefault();
+    });
+    carbonHeartTrigger.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openEasterEgg();
+      }
+    });
+
+    function closeEasterEgg() {
+      easterOverlay.classList.remove("show");
+      easterOverlay.setAttribute("aria-hidden", "true");
+      carbonHeartTrigger.focus();
+    }
+
+    easterClose.addEventListener("click", closeEasterEgg);
+    easterOverlay.addEventListener("click", function (event) {
+      if (event.target === easterOverlay) closeEasterEgg();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && easterOverlay.classList.contains("show")) {
+        closeEasterEgg();
+      }
+    });
 
     newNoteBtn.addEventListener("click", fetchMessage);
 
